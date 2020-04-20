@@ -43,7 +43,7 @@ class App extends React.Component {
     return (
     <div className="App">
       <h1 className="app-title">Shortened Debates.</h1>
-      <p className="app-description">watch the important moments on the issues you are care about.</p>
+      <p className="app-description">watch the important moments on the issues you care about most.</p>
       <InputWrapper onInputChange={this.sendInputInformation} onClear={this.onClear}/>
       <OutputWrapper outputs={this.state.output}></OutputWrapper>
     </div>
