@@ -94,8 +94,8 @@ def search(topics, candidates, debate_filters):
             relevant_transformed = []
             for video_link, quotes in relevant:
                 if video_link not in videos or videos[video_link] is None:
-                    # videos[video_link] = video_link
-                    videos[video_link] = get_video_link(video_link)
+                    videos[video_link] = video_link
+                    # videos[video_link] = get_video_link(video_link)
 
                 relevant_transformed.append({
                     "video": videos[video_link],

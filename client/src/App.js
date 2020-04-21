@@ -2,10 +2,7 @@ import React from 'react';
 import './App.css';
 import InputWrapper from './components/InputWrapper';
 import OutputWrapper from './components/OutputWrapper';
-import io from 'socket.io-client';
 
-
-const socket = io('http://localhost:5000/my-namespace');
 
 class App extends React.Component {
   constructor(props) {
@@ -14,28 +11,26 @@ class App extends React.Component {
       input: {},
       output: []
     }
-    this.setSocketListeners = this.setSocketListeners.bind(this)
     this.sendInputInformation = this.sendInputInformation.bind(this)
     this.onClear = this.onClear.bind(this)
-  }
-  componentDidMount() {
-    this.setSocketListeners()
-  }
-  setSocketListeners() {
-    socket.on('output_sent', (data)=> {
-      console.log('output received')
-      this.setState({
-        output: data
-      })
-    }) 
   }
   sendInputInformation(newInput) {
     console.log('input sent')
     this.setState({
       input: newInput
     }, ()=>{
-      console.log(socket)
-      socket.emit('input_change',{results: this.state.input})
+      fetch('/search', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newInput)
+      }).then(res => res.json()).then(data => {
+        this.setState({
+          output: data['results']
+        })
+      })
     })
   }
   onClear() {

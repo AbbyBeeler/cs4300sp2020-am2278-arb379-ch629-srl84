@@ -2,16 +2,17 @@ from . import *
 from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 from app.irsystem.models.search import search
+from app import app
 
 
-@socketio.on('input_change', namespace='/my-namespace')
-def on_input_change(data):
-    # data format: {'results': {'topics': [], 'candidates': [], 'debates': []}}
-    print("hey, we got input!")
-    topics = data['results']['topics']
-    candidates = data['results']['candidates']
-    debate_filters = data['results']['debates']
+@irsystem.route('/search', methods=['POST'])
+def on_input_change():
+    data = request.get_json()
+    # data format: {'topics': [], 'candidates': [], 'debates': []}
+    topics = data['topics']
+    candidates = data['candidates']
+    debate_filters = data['debates']
 
     results = search(topics, candidates, debate_filters)
-    socketio.emit('output_sent', results)
+    return {'results': results}
 
