@@ -4,7 +4,8 @@ import InputWrapper from './components/InputWrapper';
 import OutputWrapper from './components/OutputWrapper';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+
+const socket = io('http://localhost:5000/my-namespace');
 
 class App extends React.Component {
   constructor(props) {
@@ -22,15 +23,18 @@ class App extends React.Component {
   }
   setSocketListeners() {
     socket.on('output_sent', (data)=> {
+      console.log('output received')
       this.setState({
         output: data
       })
     }) 
   }
   sendInputInformation(newInput) {
+    console.log('input sent')
     this.setState({
       input: newInput
     }, ()=>{
+      console.log(socket)
       socket.emit('input_change',{results: this.state.input})
     })
   }

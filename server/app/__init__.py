@@ -11,7 +11,7 @@ from pymongo import MongoClient
 
 # Configure app
 
-app = Flask(__name__)
+app = Flask(__name__ ,static_folder='../../client/build/static', template_folder="../../client/build")
 socketio = SocketIO(app,cors_allowed_origins='*')
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
@@ -23,11 +23,15 @@ debates_table = db[app.config['MONGO_DBCOLLECTION']]
 
 
 # Import + Register Blueprints
-from app.irsystem import irsystem as irsystem
-app.register_blueprint(irsystem)
+# from app.irsystem import irsystem as irsystem
+# app.register_blueprint(irsystem)
 
 # Initialize app w/SocketIO
 # socketio.init_app(app)
+@app.route('/')
+def new_view(): 
+    print("new view ")
+    return render_template('index.html')
 
 # HTTP error handling
 @app.errorhandler(404)
