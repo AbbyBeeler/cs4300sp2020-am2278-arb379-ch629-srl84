@@ -78,7 +78,7 @@ def search(topics, candidates, debate_filters):
             for debate in debates_table.find({'description': debate_filter}):
                 debates[debate['url']] = debate
 
-        debates = [v for v in debates.values() if 'debate' in debates['tags']]
+        debates = [v for v in debates.values() if 'debate' in v['tags']]
     else:
         debates = debates_table.find({'tags': 'debate'})
 
