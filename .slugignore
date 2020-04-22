@@ -1,16 +1,2 @@
 # ignore for heroku
 server/app/data/
-
-# IDEs
-.idea/
-*.iml
-.vscode/
-
-# mac
-.DS_Store
-
-# virtual environment
-server/venv
-
-# compiled files
-*.pyc
