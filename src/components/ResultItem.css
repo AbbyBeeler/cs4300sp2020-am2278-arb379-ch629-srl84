@@ -8,3 +8,9 @@
     display: flex;
     justify-content: center;
 }
+
+.highlight {
+    font-weight: 800;
+    background-color: yellow;
+}
+

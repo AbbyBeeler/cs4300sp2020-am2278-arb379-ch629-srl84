@@ -33,15 +33,14 @@ class ResultItem extends React.Component {
         
     }
     render() {
-        const {video, quotes} = this.props
+        const {video, quotes, inputs} = this.props
         const quoteItems = quotes.map(quote => 
             <Quote
                 speaker = {quote.speaker}
-                candidate = {quote.candidate}
-                question = {quote.candidate}
                 time = {quote.time}
                 text = {quote.text}
                 updateTime = {this.handleUpdateTime}
+                inputs={inputs}
             ></Quote>
         )
         return (
@@ -66,10 +65,21 @@ class Quote extends React.Component {
         this.props.updateTime(this.props.time)
     }
     render() {
-        const {speaker, candidate, question, time, text} = this.props  
+        const {speaker, time, text, inputs} = this.props
+
+        const regexp = new RegExp(`\\b(${inputs.join('|')})\\b`, 'gi');
+        const words = text.split(regexp)
+
+        const innertext = words.map((word,i) => {
+            if (i%2 === 0) return <span>{word}</span>
+            else return <span className="highlight">{word}</span>
+        })
         return(
             <div className="quote-wrapper" onClick = {this.handleClick}>
-                <p><strong>{speaker}</strong><span>{ ' (' + time + ') '}</span>{text}</p>
+                <p><strong>{speaker}</strong><span>{ ' (' + time + ') '}</span>
+                { innertext }
+
+                </p>
             </div>
         )
     }

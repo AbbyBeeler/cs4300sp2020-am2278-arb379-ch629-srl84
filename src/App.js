@@ -9,15 +9,16 @@ class App extends React.Component {
     super(props);
     this.state = {
       input: {},
-      output: []
+      output: [], 
+      loading: false
     }
     this.sendInputInformation = this.sendInputInformation.bind(this)
     this.onClear = this.onClear.bind(this)
   }
   sendInputInformation(newInput) {
-    console.log('input sent')
     this.setState({
-      input: newInput
+      input: newInput, 
+      loading: true
     }, ()=>{
       fetch('/search', {
         method: 'post',
@@ -27,9 +28,19 @@ class App extends React.Component {
         },
         body: JSON.stringify(newInput)
       }).then(res => res.json()).then(data => {
-        this.setState({
-          output: data['results']
-        })
+        console.log(data)
+        if (data['results'].length === 0) {
+          this.setState({
+            output: undefined, 
+            loading: false
+          })
+        } else {
+          this.setState({
+            output: data['results'], 
+            loading: false
+          })
+        }
+        
       })
     })
   }
@@ -41,11 +52,11 @@ class App extends React.Component {
   render(){
     return (
     <div className="App">
+       <p className="app-authors">Samantha Lee (srl84), Cayla Hamann (ch629), Alex Meyer (am2278), Abby Beeler (arb379)</p>
       <h1 className="app-title">Shortened Debates.</h1>
-      <p className="app-description">Samantha Lee (srl84), Cayla Hamann (ch629), Alex Meyer (am2278), Abby Beeler (arb379)</p>
       <p className="app-description">watch the important moments on the issues you are care about.</p>
       <InputWrapper onInputChange={this.sendInputInformation} onClear={this.onClear}/>
-      <OutputWrapper outputs={this.state.output}></OutputWrapper>
+      <OutputWrapper inputs={this.state.input} loading={this.state.loading} outputs={this.state.output}></OutputWrapper>
     </div>
   );
 }

@@ -23,6 +23,7 @@ class DebateItem extends React.Component {
             <ResultItem 
                 video={result.video}
                 quotes={result.quotes}
+                inputs={this.props.inputs}
             ></ResultItem>
         )
         const degrees = this.state.openItem ? 90 : 0

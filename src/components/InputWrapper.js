@@ -49,6 +49,10 @@ class InputWrapper extends React.Component {
         const newCandidates = candidateValue === '' ? '' :candidateValue.split(',')
         const newDebates = debateValue === '' ? '' : debateValue.split(',')
 
+        console.log(newTopics)
+        console.log(newCandidates)
+        console.log(newDebates)
+
         this.setState({
             topics: [...new Set([...topics, ...newTopics])],
             candidates: [...new Set([...candidates, ...newCandidates])], 
