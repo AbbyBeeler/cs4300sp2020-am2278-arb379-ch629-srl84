@@ -10,8 +10,8 @@ from pymongo import MongoClient
 
 # Configure app
 socketio = SocketIO()
-app = Flask(__name__, static_folder='../../client/build/static',
-            template_folder="../../client/build")
+app = Flask(__name__, static_folder='../build/static',
+            template_folder="../build")
 app.config.from_object(os.environ["APP_SETTINGS"])
 
 # DB
