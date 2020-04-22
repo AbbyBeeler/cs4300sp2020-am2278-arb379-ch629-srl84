@@ -11,9 +11,3 @@ server/venv
 
 # compiled files
 *.pyc
-
-# other
-server/migrations 
-server/server/vagrant/.vagrant
-server/vagrant/site.retry
-server/vagrant/a4keypair.pem
