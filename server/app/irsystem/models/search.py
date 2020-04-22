@@ -5,11 +5,6 @@ from bs4 import BeautifulSoup
 
 from . import *
 
-# setup for getting the video url since its javascript and needs to load
-# options = webdriver.ChromeOptions()
-# options.add_argument('headless')
-# driver = webdriver.Chrome(options=options)
-
 
 # test topics
 # 'healthcare', 'terrorism', 'national security', 'gun policy', 'taxes',
@@ -94,8 +89,8 @@ def search(topics, candidates, debate_filters):
             relevant_transformed = []
             for video_link, quotes in relevant:
                 if video_link not in videos or videos[video_link] is None:
-                    videos[video_link] = video_link
-                    # videos[video_link] = get_video_link(video_link)
+                    # videos[video_link] = video_link
+                    videos[video_link] = get_video_link(video_link)
 
                 relevant_transformed.append({
                     "video": videos[video_link],

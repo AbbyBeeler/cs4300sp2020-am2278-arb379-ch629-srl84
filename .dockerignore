@@ -1,0 +1,9 @@
+server/app/data/
+.git
+.idea/
+**/*.iml
+.vscode/
+.DS_Store
+server/venv
+client/node_modules
+client/build
