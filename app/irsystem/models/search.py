@@ -1,8 +1,4 @@
-import re
-
-import requests
-from bs4 import BeautifulSoup
-
+from app.irsystem.models.videos import get_video
 from . import *
 
 
@@ -10,11 +6,6 @@ from . import *
 # 'healthcare', 'terrorism', 'national security', 'gun policy', 'taxes',
 # 'education', 'economy', 'immigration', 'abortion', 'federal deficit',
 # 'climate change', 'environment', 'war', 'corona virus', 'covid 19'
-
-
-# save video links so we don't have to requery
-# TODO: this should go in a database
-videos = dict()
 
 
 # if i is in result, return the exchange
@@ -64,18 +55,18 @@ def search(topics, candidates, debate_filters):
     debates = dict()
     if debate_filters:
         for debate_filter in debate_filters:
-            for debate in debates_table.find({'title': debate_filter}):
+            for debate in db.debates.find({'title': debate_filter}):
                 debates[debate['url']] = debate
-            for debate in debates_table.find({'tags': debate_filter}):
+            for debate in db.debates.find({'tags': debate_filter}):
                 debates[debate['url']] = debate
-            for debate in debates_table.find({'date': debate_filter}):
+            for debate in db.debates.find({'date': debate_filter}):
                 debates[debate['url']] = debate
-            for debate in debates_table.find({'description': debate_filter}):
+            for debate in db.debates.find({'description': debate_filter}):
                 debates[debate['url']] = debate
 
         debates = [v for v in debates.values() if 'debate' in v['tags']]
     else:
-        debates = debates_table.find({'tags': 'debate'})
+        debates = db.debates.find({'tags': 'debate'})
 
     results = []
     for debate in debates:
@@ -88,12 +79,8 @@ def search(topics, candidates, debate_filters):
         if relevant:
             relevant_transformed = []
             for video_link, quotes in relevant:
-                if video_link not in videos or videos[video_link] is None:
-                    # videos[video_link] = video_link
-                    videos[video_link] = get_video_link(video_link)
-
                 relevant_transformed.append({
-                    "video": videos[video_link],
+                    "video": get_video(video_link),
                     "quotes": [{
                         "speaker": quote['speaker'],
                         "candidate": quote['speaker'] in debate['candidates'],
@@ -110,21 +97,6 @@ def search(topics, candidates, debate_filters):
                 "results": relevant_transformed
             })
     return results
-
-
-# as the link is only good for a day, this must be done on demand
-def get_video_link(url):
-    request_response = requests.get(url)
-    if request_response.ok:
-        pattern = re.compile('(?<="mediaUrl":").+?(?=")')
-
-        soup = BeautifulSoup(request_response.text, 'html.parser')
-        script = soup.find('script', text=pattern)
-        if script:
-            match = pattern.search(str(script))
-            if match:
-                return match.group(0)
-    return None
 
 
 # tags are:

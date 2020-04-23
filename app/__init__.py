@@ -17,7 +17,6 @@ app.config.from_object(os.environ["APP_SETTINGS"])
 # DB
 client = MongoClient(app.config['MONGO_URI'])
 db = client[app.config['MONGO_DBNAME']]
-debates_table = db[app.config['MONGO_DBCOLLECTION']]
 
 # Import + Register Blueprints
 from app.irsystem import irsystem as irsystem
