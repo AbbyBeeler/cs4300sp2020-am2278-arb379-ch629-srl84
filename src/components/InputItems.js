@@ -48,10 +48,10 @@ class InputItem extends React.Component {
         }
 
         return (
-            <div style={style} className = "input-item_div_wrapper">
-                <div className="input-item_name">{itemName}</div>
-                <div className="input-item_delete" onClick={this.handleClick}>X</div>
-            </div>
+                <div style={style} className = "input-item_div_wrapper">
+                    <div className="input-item_name">{itemName}</div>
+                    <div className="input-item_delete" onClick={this.handleClick}>X</div>
+                </div>
         )
     } 
 }

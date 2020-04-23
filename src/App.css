@@ -25,3 +25,8 @@ h1, h2, h3, h4, h5, h6 {
 .app-description {
     margin: 0;
 }
+
+.app-authors {
+    font-size: 12px;
+    color: grey;
+}

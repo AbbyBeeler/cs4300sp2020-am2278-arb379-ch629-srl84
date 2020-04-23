@@ -3,6 +3,7 @@ import './DebateItem.css'
 import ResultItem from './ResultItem'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {  faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import  Anime from 'react-anime'
 
 class DebateItem extends React.Component {
     constructor(props) {
@@ -23,17 +24,36 @@ class DebateItem extends React.Component {
             <ResultItem 
                 video={result.video}
                 quotes={result.quotes}
+                inputs={this.props.inputs}
             ></ResultItem>
         )
         const degrees = this.state.openItem ? 90 : 0
+        const animePropsIcon = {
+            rotate: degrees
+        }
+        // const animePropsResults = {
+        //     opacity: [0,1],
+        //     duration: 1000
+        // }
         return (
             <div className = "debate-item-wrapper">
                 <div>
-                    <div className="debate-title-wrapper"><div className="debate-title" onClick={this.handleClick}>{title}</div><FontAwesomeIcon rotation={degrees} icon={faChevronRight} /></div>
+                    <div className="debate-title-wrapper" onClick={this.handleClick}>
+                        <div className="debate-title" >{title}</div>
+                        <Anime {...animePropsIcon}>
+                            <FontAwesomeIcon icon={faChevronRight} />
+                        </Anime>
+                    </div>
                     <div className="debate-date">{date}</div>
-                    {this.state.openItem && <div className="debate-description">{description}</div>}
+                    
                 </div>
-                {this.state.openItem && resultItems}
+                {this.state.openItem && 
+                    <div>
+                        <div className="debate-description">{description}</div>
+                        {resultItems}
+                    </div>
+                }
+                
             </div>
         )
     }
