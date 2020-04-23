@@ -29,12 +29,18 @@ class App extends React.Component {
         body: JSON.stringify(newInput)
       }).then(res => res.json()).then(data => {
         console.log(data)
-        if (data['results'].length === 0) {
+        if (!this.state.loading) {
+          this.setState({
+            output: []
+          })
+        }
+        else if (data['results'].length === 0) {
           this.setState({
             output: undefined, 
             loading: false
           })
-        } else {
+        } 
+        else {
           this.setState({
             output: data['results'], 
             loading: false
@@ -46,7 +52,8 @@ class App extends React.Component {
   }
   onClear() {
     this.setState({
-      output: []
+      output: [], 
+      loading: false
     })
   }
   render(){

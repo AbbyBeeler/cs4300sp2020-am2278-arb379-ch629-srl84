@@ -75,9 +75,9 @@ class Quote extends React.Component {
             else return <span className="highlight">{word}</span>
         })
         return(
-            <div className="quote-wrapper" onClick = {this.handleClick}>
+            <div onClick = {this.handleClick}>
                 <p><strong>{speaker}</strong><span>{ ' (' + time + ') '}</span>
-                { innertext }
+                <span className="quote-wrapper">{ innertext }</span>
 
                 </p>
             </div>
