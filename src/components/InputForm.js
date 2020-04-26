@@ -1,5 +1,13 @@
 import React from 'react';
+import Select from 'react-select'
 import './InputForm.css';
+
+const options = [
+    { value: 'blues', label: 'Blues' },
+    { value: 'rock', label: 'Rock' },
+    { value: 'jazz', label: 'Jazz' },
+    { value: 'orchestra', label: 'Orchestra' } 
+  ];
 
 class InputForm extends React.Component {
     constructor(props) {
@@ -7,16 +15,26 @@ class InputForm extends React.Component {
         this.state = {
             topicValue: '', 
             candidateValue: '', 
-            debateValue: ''
+            debateValue: '',
+            candidateOptions: [],
+            debateOptions: []
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
+    componentDidMount() {
+        
+        fetch('/candidates', {
+            method: 'post',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            }
+        }).then(res=> res.json).then(res => res.json()).then(data => {
+            console.log(data)})
+    }
     handleChange(event) {
-        const name = event.target.name
-        this.setState({
-            [name]: event.target.value
-        })
+        console.log(event)
     }
     handleSubmit(event) {
         event.preventDefault();
@@ -33,9 +51,9 @@ class InputForm extends React.Component {
         return (
             <div>
                 <form>
-                    <input value = {this.state.topicValue} placeholder="topic: climate change" className="input-topic" type="text" name="topicValue" onChange = {this.handleChange}></input>
-                    <input value = {this.state.candidateValue} placeholder="candidate: Bernie Sanders" className="input-candidate" type="text" name="candidateValue" onChange = {this.handleChange}></input>
-                    <input value = {this.state.debateValue} placeholder="debate: South Carolina Democratic Primary" className="input-debate" type="text" name="debateValue" onChange = {this.handleChange}></input>
+                    <Select onChange={this.handleChange} options={options}/>
+                    <Select/>
+                    <Select/>
                     <input className="button-add" type="button" onClick={this.handleSubmit} value="Search" ></input>
                 </form>
                 <div className="input-message">Separate by commas for multiple topics, candidates, or debates</div>
@@ -43,5 +61,7 @@ class InputForm extends React.Component {
         )
     }
 }
+
+
 
 export default InputForm;
