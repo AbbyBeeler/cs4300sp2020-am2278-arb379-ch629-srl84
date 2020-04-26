@@ -50,5 +50,13 @@ Debate Info Structure:
     ]
 }
 
-
-Right now there are two folders: debates and others. I think we should focus on debates for the first prototype.
+A note on tags:
+ - One of: "debate", "town hall", "speech", "interview"
+ - One or more of the topic hierarchy:
+     - [year] election
+         - [year] presidential election
+             - [year] democratic presidential primary
+             - [year] republican presidential primary
+             - [year] presidential general election
+             - etc
+         - etc
