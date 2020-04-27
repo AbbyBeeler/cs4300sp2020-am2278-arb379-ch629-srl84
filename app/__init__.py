@@ -4,6 +4,7 @@ monkey.patch_all()
 
 # Imports
 import os
+import json
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pymongo import MongoClient
@@ -18,6 +19,9 @@ app.config.from_object(os.environ["APP_SETTINGS"])
 client = MongoClient(app.config['MONGO_URI'])
 db = client[app.config['MONGO_DBNAME']]
 debates_table = db[app.config['MONGO_DBCOLLECTION']]
+
+# Query Expansion
+term_dictionary = json.load(open('app/data/dictionary.json'))
 
 # Import + Register Blueprints
 from app.irsystem import irsystem as irsystem

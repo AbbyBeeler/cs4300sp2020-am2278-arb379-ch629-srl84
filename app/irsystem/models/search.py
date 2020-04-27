@@ -19,44 +19,64 @@ videos = dict()
 
 # if i is in result, return the exchange
 # otherwise, create a new one
-def get_exchange(i, transcript, added, result):
+def get_exchange(i, transcript, added, result, topic, topic_expansion):
     if i in result:
         return result[i]
     elif i in added:
         # must be a response
-        return get_exchange(transcript[i]['response'], transcript, added, result)
+        return get_exchange(transcript[i]['response'], transcript, added, result, topic, topic_expansion)
     else:
         added.add(i)
-        result[i] = [transcript[i]]
+        score = transcript[i]['text'].count(topic) + sum(transcript[i]['text'].count(t)/2 for t in topic_expansion)
+        result[i] = ([transcript[i]], score)
         return result[i]
 
 
-def exact_search(transcript, topic, candidates):
+def exact_search(transcript, topic, candidates, topic_expansion):
     topic = topic.lower()
     added = set()
     result = dict()
     for i, quote in enumerate(transcript):
         if i not in added and topic in quote['text'].lower() and (quote['speaker'].lower() in candidates or len(candidates) == 0):
-            # if in questions, then add question and all responses
+            # if in questions, then add question and all responsesa
             if quote['question'] and quote['response']:
                 exchange = [quote]
                 added.add(i)
+                score = quote['text'].count(topic)
+                score += sum(quote['text'].count(t)/2 for t in topic_expansion)
                 for q in quote['response']:
                     exchange.append(transcript[q])
+                    score += sum(transcript[q]['text'].count(t)/2 for t in topic_expansion)
+                    score += transcript[q]['text'].count(topic)
                     added.add(q)
-                result[i] = exchange
+                result[i] = (exchange, score)
             # otherwise only add question (if not already) and response
             elif not quote['question'] and type(quote['response']) == int:
                 added.add(i)
                 first_i = quote['response']
-                z = get_exchange(first_i, transcript, added, result)
+                z, score = get_exchange(first_i, transcript, added, result, topic, topic_expansion)
                 exchange = z
                 exchange.append(quote)
+                score = score + quote['text'].count(topic) + sum(quote['text'].count(t)/2 for t in topic_expansion)
+                result[first_i] =  (exchange, score)
     return result.values()
+
+
+def query_expansion(topics): 
+    expansion = []
+    for topic in topics:
+        tokens = topic.split()
+        for token in tokens: 
+            if token in term_dictionary:
+                expansion.extend([term_dictionary[token][i] for i in range(3)])
+    return expansion
 
 
 def search(topics, candidates, debate_filters):
     candidates = [candidate.lower() for candidate in candidates]
+
+    topic_expansion = query_expansion(topics)
+    topic_expansion.extend(topics)
 
     # TODO: add in candidate filtering
     # filter debates by title, tags, date, and description
@@ -82,12 +102,13 @@ def search(topics, candidates, debate_filters):
         relevant = []
         for topic in topics:
             for part in debate['parts']:
-                for x in exact_search(part['text'], topic, candidates):
-                    relevant.append((part['video'], x))
+                for x, score in exact_search(part['text'], topic, candidates, topic_expansion):
+                    relevant.append((part['video'], x, score))
 
         if relevant:
             relevant_transformed = []
-            for video_link, quotes in relevant:
+            relevant.sort(key = lambda x: x[2], reverse=True)
+            for video_link, quotes, _ in relevant:
                 if video_link not in videos or videos[video_link] is None:
                     # videos[video_link] = video_link
                     videos[video_link] = get_video_link(video_link)
@@ -109,6 +130,7 @@ def search(topics, candidates, debate_filters):
                 "description": debate['description'],
                 "results": relevant_transformed
             })
+            
     return results
 
 
