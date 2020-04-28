@@ -1,10 +1,8 @@
-import re
+import spacy
+from nltk.stem.snowball import SnowballStemmer
 
-import requests
-from bs4 import BeautifulSoup
-
+from app.irsystem.models.videos import get_video
 from . import *
-
 
 # test topics
 # 'healthcare', 'terrorism', 'national security', 'gun policy', 'taxes',
@@ -12,10 +10,8 @@ from . import *
 # 'climate change', 'environment', 'war', 'corona virus', 'covid 19'
 
 
-# save video links so we don't have to requery
-# TODO: this should go in a database
-videos = dict()
-
+nlp = spacy.load('en_core_web_sm')
+stemmer = SnowballStemmer('english')
 
 # if i is in result, return the exchange
 # otherwise, create a new one
@@ -71,87 +67,79 @@ def query_expansion(topics):
                 expansion.extend([term_dictionary[token][i] for i in range(3)])
     return expansion
 
+# tokenize, lemmatize, lowercase, and filter out stop words and punctuation
+def tokenize(text):
+    tokens = {stemmer.stem(token.text.lower()) for token in nlp(text) if not (token.is_punct or token.is_space or token.is_stop)}
+    return tokens
+
 
 def search(topics, candidates, debate_filters):
-    candidates = [candidate.lower() for candidate in candidates]
+    # query: (OR candidates) AND (OR filters in title, tags, and description)
 
-    topic_expansion = query_expansion(topics)
-    topic_expansion.extend(topics)
+    # OR all of the candidates
+    # TODO: remove debate filter
+    debate_query = {'tags': 'debate'}
+    if len(candidates) == 1:
+        debate_query['candidates'] = candidates[0]
+    elif len(candidates) > 1:
+        debate_query['$or'] = [{'candidates': candidate} for candidate in candidates]
 
-    # TODO: add in candidate filtering
-    # filter debates by title, tags, date, and description
-    # right now filter by debate
-    debates = dict()
-    if debate_filters:
+    # AND all words in a debate filter, OR the filters
+    debates = []
+    for debate in db.debates.find(debate_query):
+        # TODO: tags?
+        # filter debates by title, tags, and description
+        debate_text = tokenize(debate['title']).union(
+            tokenize(debate['description'])).union(
+            tokenize(' '.join(debate['tags'])))
+
+        if not debate_filters:
+            debates.append(debate)
         for debate_filter in debate_filters:
-            for debate in debates_table.find({'title': debate_filter}):
-                debates[debate['url']] = debate
-            for debate in debates_table.find({'tags': debate_filter}):
-                debates[debate['url']] = debate
-            for debate in debates_table.find({'date': debate_filter}):
-                debates[debate['url']] = debate
-            for debate in debates_table.find({'description': debate_filter}):
-                debates[debate['url']] = debate
+            words = tokenize(debate_filter)
+            if words.issubset(debate_text):
+                debates.append(debate)
+                break
 
-        debates = [v for v in debates.values() if 'debate' in v['tags']]
-    else:
-        debates = debates_table.find({'tags': 'debate'})
-
+    # TODO: order debates by date and social component
     results = []
     for debate in debates:
-        relevant = []
-        for topic in topics:
-            for part in debate['parts']:
-                for x, score in exact_search(part['text'], topic, candidates, topic_expansion):
-                    relevant.append((part['video'], x, score))
-
-        if relevant:
-            relevant_transformed = []
-            relevant.sort(key = lambda x: x[2], reverse=True)
-            for video_link, quotes, _ in relevant:
-                if video_link not in videos or videos[video_link] is None:
-                    # videos[video_link] = video_link
-                    videos[video_link] = get_video_link(video_link)
-
-                relevant_transformed.append({
-                    "video": videos[video_link],
-                    "quotes": [{
-                        "speaker": quote['speaker'],
-                        "candidate": quote['speaker'] in debate['candidates'],
-                        "question": quote['question'],
-                        "time": quote['time'],
-                        "text": quote['text']
-                    } for quote in quotes]
-                })
-
-            results.append({
-                "title": debate['title'],
-                "date": debate['date'],
-                "description": debate['description'],
-                "results": relevant_transformed
-            })
-            
+        result = search_debate(debate, topics, candidates)
+        if result is not None:
+            results.append(result)
     return results
 
 
-# as the link is only good for a day, this must be done on demand
-def get_video_link(url):
-    request_response = requests.get(url)
-    if request_response.ok:
-        pattern = re.compile('(?<="mediaUrl":").+?(?=")')
+def search_debate(debate, topics, candidates):
 
-        soup = BeautifulSoup(request_response.text, 'html.parser')
-        script = soup.find('script', text=pattern)
-        if script:
-            match = pattern.search(str(script))
-            if match:
-                return match.group(0)
+    topic_expansion = query_expansion(topics)
+    topic_expansion.extend(topics)
+    
+    relevant = []
+    for topic in topics:
+        for part in debate['parts']:
+            for x, score in exact_search(part['text'], topic, candidates, topic_expansion):
+                relevant.append((part['video'], x, score))
+
+    if relevant:
+        relevant_transformed = []
+        relevant.sort(key = lambda x: x[2], reverse=True)
+        for video_link, quotes, _ in relevant:
+            relevant_transformed.append({
+                "video": get_video(video_link),
+                "quotes": [{
+                    "speaker": quote['speaker'],
+                    "candidate": quote['speaker'] in debate['candidates'],
+                    "question": quote['question'],
+                    "time": quote['time'],
+                    "text": quote['text']
+                } for quote in quotes]
+            })
+
+        return {
+            "title": debate['title'],
+            "date": debate['date'],
+            "description": debate['description'],
+            "results": relevant_transformed
+        }
     return None
-
-
-# tags are:
-# one of: "debate", "town hall", "speech", "interview",
-# hierarchy (only one of which):
-#                                                   [year] election
-#                           [year] presidential election         etc
-# [year] democratic presidential primary       [year] republican presidential primary   [year] presidential general election

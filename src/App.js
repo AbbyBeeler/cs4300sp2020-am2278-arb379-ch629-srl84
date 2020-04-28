@@ -61,7 +61,7 @@ class App extends React.Component {
     <div className="App">
        <p className="app-authors">Samantha Lee (srl84), Cayla Hamann (ch629), Alex Meyer (am2278), Abby Beeler (arb379)</p>
       <h1 className="app-title">Shortened Debates.</h1>
-      <p className="app-description">watch the important moments on the issues you are care about.</p>
+      <p className="app-description">watch the important moments on the issues you care most about.</p>
       <InputWrapper onInputChange={this.sendInputInformation} onClear={this.onClear}/>
       <OutputWrapper inputs={this.state.input} loading={this.state.loading} outputs={this.state.output}></OutputWrapper>
     </div>

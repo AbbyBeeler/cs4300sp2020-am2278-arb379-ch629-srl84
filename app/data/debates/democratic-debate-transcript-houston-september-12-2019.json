@@ -40,13 +40,7 @@
           "time": "00:00",
           "text": "Set. The field has been narrowed. For one night only, the top 10 candidates are here. Our Democratic primary debate starts right now.",
           "question": false,
-          "response": [
-            1,
-            2,
-            3,
-            6,
-            10
-          ]
+          "response": []
         },
         {
           "speaker": "Joe Biden",

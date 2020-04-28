@@ -9,16 +9,19 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pymongo import MongoClient
 
+# paths
+static_folder = '../build/static'
+template_folder = '../build'
+
 # Configure app
 socketio = SocketIO()
-app = Flask(__name__, static_folder='../build/static',
-            template_folder="../build")
+app = Flask(__name__, static_folder=static_folder,
+            template_folder=template_folder)
 app.config.from_object(os.environ["APP_SETTINGS"])
 
 # DB
 client = MongoClient(app.config['MONGO_URI'])
 db = client[app.config['MONGO_DBNAME']]
-debates_table = db[app.config['MONGO_DBCOLLECTION']]
 
 # Query Expansion
 term_dictionary = json.load(open('app/data/dictionary.json'))
@@ -30,6 +33,7 @@ app.register_blueprint(irsystem)
 # Initialize app w/SocketIO
 socketio.init_app(app)
 
+
 @app.route('/')
 def new_view():
     return render_template('index.html')
@@ -38,4 +42,4 @@ def new_view():
 # HTTP error handling
 @app.errorhandler(404)
 def not_found(error):
-    return render_template("404.html"), 404
+    return render_template('404.html'), 404
