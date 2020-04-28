@@ -1,2 +1,3 @@
 # ignore for heroku
-server/app/data/
+app/data/debates/
+app/data/others/
