@@ -1,3 +1,4 @@
 # ignore for heroku
 app/data/debates/
 app/data/others/
+app/data/polling/

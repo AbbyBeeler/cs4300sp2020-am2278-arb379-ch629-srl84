@@ -1,3 +1,4 @@
+from datetime import datetime
 import spacy
 from nltk.stem.snowball import SnowballStemmer
 
@@ -12,6 +13,7 @@ from . import *
 
 nlp = spacy.load('en_core_web_sm')
 stemmer = SnowballStemmer('english')
+
 
 # if i is in result, return the exchange
 # otherwise, create a new one
@@ -33,7 +35,7 @@ def exact_search(transcript, topic, candidates, topic_expansion):
     added = set()
     result = dict()
     for i, quote in enumerate(transcript):
-        if i not in added and topic in quote['text'].lower() and (quote['speaker'].lower() in candidates or len(candidates) == 0):
+        if i not in added and topic in quote['text'].lower() and (quote['speaker'] in candidates or len(candidates) == 0):
             # if in questions, then add question and all responsesa
             if quote['question'] and quote['response']:
                 exchange = [quote]
@@ -67,10 +69,15 @@ def query_expansion(topics):
                 expansion.extend([term_dictionary[token][i] for i in range(3)])
     return expansion
 
+
 # tokenize, lemmatize, lowercase, and filter out stop words and punctuation
 def tokenize(text):
     tokens = {stemmer.stem(token.text.lower()) for token in nlp(text) if not (token.is_punct or token.is_space or token.is_stop)}
     return tokens
+
+
+def date_comparator(date, poll_dates):
+    return min(max(y, date) - min(y, date) for y in poll_dates)
 
 
 def search(topics, candidates, debate_filters):
@@ -101,12 +108,19 @@ def search(topics, candidates, debate_filters):
                 debates.append(debate)
                 break
 
-    # TODO: order debates by date and social component
     results = []
     for debate in debates:
         result = search_debate(debate, topics, candidates)
         if result is not None:
             results.append(result)
+
+    # order debates by date and social component
+    poll_dates = [datetime.fromisoformat(y) for x in candidates for y in polling_dictionary[x]]
+    if poll_dates:
+        results = sorted(results, key=lambda x: date_comparator(datetime.fromisoformat(x['date']), poll_dates))
+    else:
+        results = sorted(results, key=lambda x: datetime.fromisoformat(x['date']), reverse=True)
+
     return results
 
 

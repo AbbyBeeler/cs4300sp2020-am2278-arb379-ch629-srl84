@@ -5,6 +5,7 @@ monkey.patch_all()
 # Imports
 import os
 import json
+from collections import defaultdict
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pymongo import MongoClient
@@ -25,6 +26,9 @@ db = client[app.config['MONGO_DBNAME']]
 
 # Query Expansion
 term_dictionary = json.load(open('app/data/dictionary.json'))
+
+# Polling Data
+polling_dictionary = defaultdict(list, json.load(open('app/data/polling.json')))
 
 # Import + Register Blueprints
 from app.irsystem import irsystem as irsystem
