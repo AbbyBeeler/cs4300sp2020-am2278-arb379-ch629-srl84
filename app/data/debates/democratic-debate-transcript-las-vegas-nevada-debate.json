@@ -1611,8 +1611,8 @@
           "speaker": "Lester Holt",
           "time": "00:22",
           "text": "Mayor Buttigieg, your thoughts.",
-          "question": true,
-          "response": [1]
+          "question": false,
+          "response": []
         },
         {
           "speaker": "Pete Buttigieg",

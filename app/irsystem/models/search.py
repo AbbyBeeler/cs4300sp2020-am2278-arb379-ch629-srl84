@@ -10,8 +10,8 @@ from . import *
 # 'climate change', 'environment', 'war', 'corona virus', 'covid 19'
 
 
-nlp = spacy.load("en_core_web_sm")
-stemmer = SnowballStemmer("english")
+nlp = spacy.load('en_core_web_sm')
+stemmer = SnowballStemmer('english')
 
 # if i is in result, return the exchange
 # otherwise, create a new one

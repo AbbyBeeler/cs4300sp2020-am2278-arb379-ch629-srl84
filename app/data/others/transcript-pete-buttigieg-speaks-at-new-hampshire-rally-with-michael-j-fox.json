@@ -7,10 +7,10 @@
   ],
   "date": "2020-02-08",
   "candidates": [
-    "Pete Buttigieg",
-    "Michael J. Fox"
+    "Pete Buttigieg"
   ],
   "other_speakers": [
+    "Michael J. Fox",
     "Congresswoman Kuster"
   ],
   "description": "Campaigning for the New Hampshire primary, Pete Buttigieg held a rally in Keene, New Hampshire on February 8, 2020. Michael J. Fox also spoke at the rally in support of Buttigieg.",
@@ -23,8 +23,10 @@
           "speaker": "Michael J. Fox",
           "time": "00:11",
           "text": "Well, thank you very much. That’s cool. That’s cool. [crosstalk 00:00:30]. Pete Buttigieg is fantastic. I was watching the debate last night and it occurred to me I love all the Democratic nominees and I think they’re all terrific and I have respect for all of them, but they’re all yelling at me. I was sitting there and I said, “Why are you yelling at me, Bernie? What did I do to you?” I said, “They’re all screaming.” But Pete isn’t screaming. He’s just talking to me. He’s the one guy who’s just quiet and just making his point and it’s a point I agree with on almost all the issues. All issues. I can’t tell you one I don’t. I’ll just allow for the possibility that he might be, “You have to wear purple on Fridays,” or something. But I want to tell a story about the first time I saw… Well, the temperament and that idea that he can talk to you and not yell at you [inaudible 00:01:35]. I mean, that’s the contrast we need to make to Trump to this insanity. He said something there, just saying, okay, whatever he just said, here’s the thing. I know Pete is capable of that. I believe he’s got the ability and temperament and the intelligence to get past this current divisive, dysfunctional politics. We’re going to new low to new low. I think he’ll rise us back up to where we need to be. I first noticed Pete on a morning show, one of the morning shows, and I just had my breakfast and watching the TV. Then this guy comes on, this young guy from Indiana running for president. I had never heard of him. The host of the show is just, I won’t say the name of the show, but they’ve had three hosts and one was [inaudible 00:02:37]. I watch every day. But they were kind of playing with him at first. I could tell they thought, who is this guy? And trying to answer this and then he would answer that and then they’d say, well how about this? And he would answer that. He’d do it very quickly. He was eating his lunch. He just had every answer but it wasn’t like it wrote. It was like he was saying it whether he said it a thousand times before, I believe that he was saying it for the first time and I believed he was saying it to me. That comes from a true place in him. He’s not trying to pull one over on me. He’s just trying to tell me the way he sees it. More times than not that that’s what I saw. We know the issues. I mean, climate change and obviously health care issues are important to me, these preexisting conditions. Because I have pre existing conditions. But I think this comes to me. From Indiana, a veteran, a road scholar. We have a very stable road scholar. Well better than genius. That’s right. That’s what I say the J stands for. But the story, so I saw him. I was so impressed with him. Where’s my phone? I called people afterwards. I said, “This guy. Just Google Mayor Pete.” Just see what comes up. And they come back and say, this guy sounds impressive.” I said, yeah, he’s amazing. Everybody I’ve told about him, now everybody knows him, but in those earlier days immediately became followers and supporters. It’s a quick digression, but 2006 I was campaigning for research freedom and for STEM cell research. I was traveling around with the midterm and I was supporting candidates that supported STEM cell research. I was in Chicago and I was supporting Tammy Duckworth. I was leaving and I was at the airport and there’s this guy standing by waiting for his car. He was kind of hidden away, like kind of around a corner smoking a cigarette, if I could tell the truth. It was the Senator from Illinois. It was Barack Obama and I met him. It was really honest. He was just started to make a splash and I talked to him and I was so impressed with him and I called my wife afterwards and I said, “I just met the next president of the United States.” I felt the same way when I saw Pete. I mean, working together we can not only get a lefthanded Maltese, American Episcopalian gay millennial war veteran be elected to the President of the United States, we also begin to tackle and quit talking about it, and just tackle challenges like rising healthcare costs to climate change and the gun violence epidemic so that children have a brighter future. It’s all about the future. I think it’s a real honor to be here today. It’s so great to see all of you and to be with Mayor Pete. I just want to introduce the next President of the United States. Pete Buttigieg.",
-          "question": false,
-          "response": 0
+          "question": true,
+          "response": [
+            1
+          ]
         },
         {
           "speaker": "Pete Buttigieg",
