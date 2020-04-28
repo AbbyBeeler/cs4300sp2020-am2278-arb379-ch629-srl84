@@ -17,7 +17,12 @@ def debates():
 
 @irsystem.route('/candidates', methods=['GET'])
 def candidate_list():
-    return get_candidates()
+    candidates = get_candidates()
+    debates = get_debate_titles_tags()
+
+
+
+    return {'candidates': candidates, 'debates': debates}
 
 
 @irsystem.route('/debates', methods=['GET'])
