@@ -9,10 +9,11 @@ from collections import defaultdict
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pymongo import MongoClient
+from config import basedir
 
 # paths
-static_folder = '../build/static'
-template_folder = '../build'
+static_folder = basedir + '/build/static'
+template_folder = basedir + '/build'
 
 # Configure app
 socketio = SocketIO()
@@ -25,16 +26,13 @@ client = MongoClient(app.config['MONGO_URI'])
 db = client[app.config['MONGO_DBNAME']]
 
 # Query Expansion
-term_dictionary = json.load(open('app/data/dictionary.json'))
-
-# Polling Data
-polling_dictionary = defaultdict(list, json.load(open('app/data/polling.json')))
+term_dictionary = json.load(open(basedir + '/app/data/dictionary.json'))
 
 # Import + Register Blueprints
 from app.irsystem import irsystem as irsystem
 app.register_blueprint(irsystem)
 
-# Initialize app w/SocketIO
+# Initialize app with SocketIO
 socketio.init_app(app)
 
 

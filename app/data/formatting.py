@@ -1,6 +1,8 @@
 import json
 import os
 
+from config import basedir
+
 
 IRRELEVANT_TEXT_BLOCK = 50
 IMPORTANT_TEXT_BLOCK = 150
@@ -142,11 +144,13 @@ def format_and_annotate(debate):
     annotate_responses(debate)
 
 
-folders = ['debates/', 'others/']
+folders = [basedir + '/app/data/debates/', basedir + '/app/data/others/']
 for folder in folders:
     for file_name in os.listdir(folder):
         with open(folder + file_name) as f:
-            debate_dictionary = json.load(f)
+            # rev uses weird apostrophes
+            data = f.read().replace('’', '\'')
+            debate_dictionary = json.loads(data)
 
         format_and_annotate(debate_dictionary)
 
@@ -156,7 +160,7 @@ for folder in folders:
 
 # # Testing Code
 # # load the files
-# with open('debates/december-democratic-debate-transcript-sixth-debate-from-los-angeles.json') as f:
+# with open(basedir + '/app/data/debates/december-democratic-debate-transcript-sixth-debate-from-los-angeles.json') as f:
 #     debate_dictionary = json.load(f)
 # with open('coded.json') as f:
 #     correct = json.load(f)

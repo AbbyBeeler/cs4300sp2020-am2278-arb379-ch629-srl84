@@ -115,7 +115,8 @@ def search(topics, candidates, debate_filters):
             results.append(result)
 
     # order debates by date and social component
-    poll_dates = [datetime.fromisoformat(y) for x in candidates for y in polling_dictionary[x]]
+    # poll_dates = [datetime.fromisoformat(y) for x in candidates for y in polling_dictionary[x]]
+    poll_dates = []
     if poll_dates:
         results = sorted(results, key=lambda x: date_comparator(datetime.fromisoformat(x['date']), poll_dates))
     else:
