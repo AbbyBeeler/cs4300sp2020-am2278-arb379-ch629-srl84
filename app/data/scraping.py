@@ -3,6 +3,7 @@ import json
 import dateutil.parser
 import requests
 from bs4 import BeautifulSoup
+from bson import json_util
 
 
 # execute a request, if it fails then print and exit, other return souped text
@@ -43,9 +44,10 @@ def scrape_url(debate_url, folder_name, is_debate):
         tags.append("debate")
     # attempt to get the date from the background paragraph
     try:
-        date = dateutil.parser.parse(intro_text, fuzzy=True, ignoretz=True).date()
+        date = dateutil.parser.parse(intro_text, fuzzy=True, ignoretz=True)
     except ValueError:
-        date = None
+        # otherwise set 0 date
+        date = dateutil.parser.parse('1970-01-01', ignoretz=True)
 
     # get each response
     parts = []
@@ -94,7 +96,7 @@ def scrape_url(debate_url, folder_name, is_debate):
     }
 
     with open(folder_name + '/' + debate_url.split('/')[-1] + '.json', 'w', encoding='utf8') as f:
-        json.dump(debate_info, f, default=str, ensure_ascii=False)
+        json.dump(debate_info, f, default=json_util.default, ensure_ascii=False)
 
 
 # urls for the search pages

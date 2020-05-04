@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "speech"
   ],
-  "date": "2020-04-16",
+  "date": {
+    "$date": 1586995200000
+  },
   "candidates": [
     "Pete Buttigieg"
   ],

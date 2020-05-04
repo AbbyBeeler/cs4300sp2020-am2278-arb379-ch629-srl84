@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "town hall"
   ],
-  "date": "2020-04-16",
+  "date": {
+    "$date": 1586995200000
+  },
   "candidates": [
     "Joe Biden"
   ],

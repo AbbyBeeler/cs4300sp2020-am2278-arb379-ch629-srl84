@@ -5,7 +5,9 @@
     "2020 presidential general election",
     "speech"
   ],
-  "date": "2020-01-30",
+  "date": {
+    "$date": 1580342400000
+  },
   "candidates": [
     "Donald Trump"
   ],

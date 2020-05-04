@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "speech"
   ],
-  "date": "2020-04-08",
+  "date": {
+    "$date": 1586304000000
+  },
   "candidates": [
     "Bernie Sanders"
   ],

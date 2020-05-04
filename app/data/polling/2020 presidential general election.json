@@ -1,6 +1,6 @@
 [
   {
-    " ": "Bernie Sanders_2020 presidential general election",
+    "candidate_race": "Bernie Sanders_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -689,7 +689,7 @@
     ]
   },
   {
-    " ": "Amy Klobuchar_2020 presidential general election",
+    "candidate_race": "Amy Klobuchar_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -814,7 +814,7 @@
     ]
   },
   {
-    " ": "Elizabeth Warren_2020 presidential general election",
+    "candidate_race": "Elizabeth Warren_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -1377,7 +1377,7 @@
     ]
   },
   {
-    " ": "Joe Biden_2020 presidential general election",
+    "candidate_race": "Joe Biden_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -2306,7 +2306,7 @@
     ]
   },
   {
-    " ": "Pete Buttigieg_2020 presidential general election",
+    "candidate_race": "Pete Buttigieg_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -2665,7 +2665,7 @@
     ]
   },
   {
-    " ": "Tom Steyer_2020 presidential general election",
+    "candidate_race": "Tom Steyer_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -2682,7 +2682,7 @@
     ]
   },
   {
-    " ": "Mike Bloomberg_2020 presidential general election",
+    "candidate_race": "Mike Bloomberg_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -2867,7 +2867,7 @@
     ]
   },
   {
-    " ": "Cory Booker_2020 presidential general election",
+    "candidate_race": "Cory Booker_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -2908,7 +2908,7 @@
     ]
   },
   {
-    " ": "Kamala Harris_2020 presidential general election",
+    "candidate_race": "Kamala Harris_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -3207,7 +3207,7 @@
     ]
   },
   {
-    " ": "Beto O'Rourke_2020 presidential general election",
+    "candidate_race": "Beto O'Rourke_2020 presidential general election",
     "polls": [
       {
         "date": {
@@ -3284,7 +3284,7 @@
     ]
   },
   {
-    " ": "Donald Trump_2020 presidential general election",
+    "candidate_race": "Donald Trump_2020 presidential general election",
     "polls": [
       {
         "date": {

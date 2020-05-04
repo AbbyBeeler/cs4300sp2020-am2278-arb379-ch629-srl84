@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "debate"
   ],
-  "date": "2020-01-14",
+  "date": {
+    "$date": 1578960000000
+  },
   "candidates": [
     "Amy Klobuchar",
     "Pete Buttigieg",

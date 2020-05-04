@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "speech"
   ],
-  "date": "2012-03-12",
+  "date": {
+    "$date": 1331510400000
+  },
   "candidates": [
     "Joe Biden"
   ],

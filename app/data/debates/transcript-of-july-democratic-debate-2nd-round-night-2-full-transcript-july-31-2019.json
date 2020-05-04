@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "debate"
   ],
-  "date": "2019-07-31",
+  "date": {
+    "$date": 1564531200000
+  },
   "candidates": [
     "Tulsi Gabbard",
     "Andrew Yang",

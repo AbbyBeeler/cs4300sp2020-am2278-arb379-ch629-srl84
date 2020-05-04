@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "town hall"
   ],
-  "date": "2020-02-17",
+  "date": {
+    "$date": 1581897600000
+  },
   "candidates": [
     "Elizabeth Warren"
   ],

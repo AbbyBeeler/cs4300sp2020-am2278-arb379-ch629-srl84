@@ -1,6 +1,6 @@
 [
   {
-    " ": "Bernie Sanders_2020 democratic presidential primary",
+    "candidate_race": "Bernie Sanders_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -1739,7 +1739,7 @@
     ]
   },
   {
-    " ": "Amy Klobuchar_2020 democratic presidential primary",
+    "candidate_race": "Amy Klobuchar_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -3214,7 +3214,7 @@
     ]
   },
   {
-    " ": "Andrew Yang_2020 democratic presidential primary",
+    "candidate_race": "Andrew Yang_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -4479,7 +4479,7 @@
     ]
   },
   {
-    " ": "Elizabeth Warren_2020 democratic presidential primary",
+    "candidate_race": "Elizabeth Warren_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -6056,7 +6056,7 @@
     ]
   },
   {
-    " ": "Joe Biden_2020 democratic presidential primary",
+    "candidate_race": "Joe Biden_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -7837,7 +7837,7 @@
     ]
   },
   {
-    " ": "Pete Buttigieg_2020 democratic presidential primary",
+    "candidate_race": "Pete Buttigieg_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -9336,7 +9336,7 @@
     ]
   },
   {
-    " ": "Tom Steyer_2020 democratic presidential primary",
+    "candidate_race": "Tom Steyer_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -10367,7 +10367,7 @@
     ]
   },
   {
-    " ": "Mike Bloomberg_2020 democratic presidential primary",
+    "candidate_race": "Mike Bloomberg_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -10954,7 +10954,7 @@
     ]
   },
   {
-    " ": "Bill de Blasio_2020 democratic presidential primary",
+    "candidate_race": "Bill de Blasio_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -11427,7 +11427,7 @@
     ]
   },
   {
-    " ": "Cory Booker_2020 democratic presidential primary",
+    "candidate_race": "Cory Booker_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -12578,7 +12578,7 @@
     ]
   },
   {
-    " ": "Jay Inslee_2020 democratic presidential primary",
+    "candidate_race": "Jay Inslee_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -13009,7 +13009,7 @@
     ]
   },
   {
-    " ": "Juli\u00e1n Castro_2020 democratic presidential primary",
+    "candidate_race": "Juli\u00e1n Castro_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -14088,7 +14088,7 @@
     ]
   },
   {
-    " ": "Kamala Harris_2020 democratic presidential primary",
+    "candidate_race": "Kamala Harris_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -15131,7 +15131,7 @@
     ]
   },
   {
-    " ": "Kirsten Gillibrand_2020 democratic presidential primary",
+    "candidate_race": "Kirsten Gillibrand_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -15628,7 +15628,7 @@
     ]
   },
   {
-    " ": "Michael Bennet_2020 democratic presidential primary",
+    "candidate_race": "Michael Bennet_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -16743,7 +16743,7 @@
     ]
   },
   {
-    " ": "Tulsi Gabbard_2020 democratic presidential primary",
+    "candidate_race": "Tulsi Gabbard_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -18206,7 +18206,7 @@
     ]
   },
   {
-    " ": "Hillary Clinton_2020 democratic presidential primary",
+    "candidate_race": "Hillary Clinton_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -18229,7 +18229,7 @@
     ]
   },
   {
-    " ": "Eric Swalwell_2020 democratic presidential primary",
+    "candidate_race": "Eric Swalwell_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -18450,7 +18450,7 @@
     ]
   },
   {
-    " ": "John Hickenlooper_2020 democratic presidential primary",
+    "candidate_race": "John Hickenlooper_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -18869,7 +18869,7 @@
     ]
   },
   {
-    " ": "Marianne Williamson_2020 democratic presidential primary",
+    "candidate_race": "Marianne Williamson_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -19816,7 +19816,7 @@
     ]
   },
   {
-    " ": "Beto O'Rourke_2020 democratic presidential primary",
+    "candidate_race": "Beto O'Rourke_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -20715,7 +20715,7 @@
     ]
   },
   {
-    " ": "John Delaney_2020 democratic presidential primary",
+    "candidate_race": "John Delaney_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -21806,7 +21806,7 @@
     ]
   },
   {
-    " ": "Steve Bullock_2020 democratic presidential primary",
+    "candidate_race": "Steve Bullock_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -22639,7 +22639,7 @@
     ]
   },
   {
-    " ": "Tim Ryan_2020 democratic presidential primary",
+    "candidate_race": "Tim Ryan_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -23298,7 +23298,7 @@
     ]
   },
   {
-    " ": "Donald Trump_2020 democratic presidential primary",
+    "candidate_race": "Donald Trump_2020 democratic presidential primary",
     "polls": [
       {
         "date": {
@@ -23825,7 +23825,7 @@
     ]
   },
   {
-    " ": "John Kasich_2020 democratic presidential primary",
+    "candidate_race": "John Kasich_2020 democratic presidential primary",
     "polls": [
       {
         "date": {

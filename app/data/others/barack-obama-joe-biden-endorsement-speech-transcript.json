@@ -5,7 +5,9 @@
     "2020 presidential general election",
     "speech"
   ],
-  "date": "2020-04-14",
+  "date": {
+    "$date": 1586822400000
+  },
   "candidates": [],
   "other_speakers": [
     "Barack Obama"

@@ -5,7 +5,9 @@
     "2020 presidential general election",
     "town hall"
   ],
-  "date": "2020-04-15",
+  "date": {
+    "$date": 1586908800000
+  },
   "candidates": [
     "Joe Biden"
   ],

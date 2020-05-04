@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "interview"
   ],
-  "date": "2019-03-25",
+  "date": {
+    "$date": 1553472000000
+  },
   "candidates": [
     "Joe Biden"
   ],

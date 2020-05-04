@@ -1,7 +1,10 @@
-from datetime import datetime
+from datetime import timedelta
+
+import pymongo
 import spacy
 from nltk.stem.snowball import SnowballStemmer
 
+from app.irsystem import TYPE_TAGS
 from app.irsystem.models.videos import get_video
 from . import *
 
@@ -76,8 +79,34 @@ def tokenize(text):
     return tokens
 
 
-def date_comparator(date, poll_dates):
-    return min(max(y, date) - min(y, date) for y in poll_dates)
+def get_candidate_info(candidate_name, election, date):
+    # get polling data
+    polls = db.polls.find_one({'candidate_race': candidate_name + '_' + election})
+    if polls is not None:
+        polls = sorted(polls['polls'], key=lambda x: x['date'], reverse=True)
+
+        shifted_date = date + timedelta(days=1)  # day of polling won't be affected
+        pre_date = date - timedelta(weeks=4)
+        after_date = date + timedelta(weeks=4)
+
+        # limit after_date to before next debate
+        other_debates = db.debates.find_one({'candidates': candidate_name,
+                                             'tags': 'debate',
+                                             'date': {'$gt': date, '$lt': after_date}},
+                                            sort=[('date', pymongo.ASCENDING)])
+        if other_debates is not None:
+            after_date = other_debates['date']
+
+        # get the closest poll to before the debate and after roughly 4 weeks
+        before = next((x for x in polls if pre_date <= x['date'] < shifted_date), False)
+        after = next((x for x in polls if shifted_date <= x['date'] <= after_date), False)
+
+        if before and after and before['pct'] != 0:
+            pct_change = round((after['pct'] - before['pct']) / before['pct'] * 100, 2)
+            return {'name': candidate_name, 'pct_change': pct_change}
+
+    # can't calculate change if no polls in the range
+    return {'name': candidate_name, 'pct_change': None}
 
 
 def search(topics, candidates, debate_filters):
@@ -112,15 +141,12 @@ def search(topics, candidates, debate_filters):
     for debate in debates:
         result = search_debate(debate, topics, candidates)
         if result is not None:
+            election = next(x for x in debate['tags'] if x not in TYPE_TAGS)
+            result['candidates'] = [get_candidate_info(x, election, debate['date']) for x in debate['candidates']]
             results.append(result)
 
-    # order debates by date and social component
-    # poll_dates = [datetime.fromisoformat(y) for x in candidates for y in polling_dictionary[x]]
-    poll_dates = []
-    if poll_dates:
-        results = sorted(results, key=lambda x: date_comparator(datetime.fromisoformat(x['date']), poll_dates))
-    else:
-        results = sorted(results, key=lambda x: datetime.fromisoformat(x['date']), reverse=True)
+    # order debates by date
+    results = sorted(results, key=lambda x: x['date'], reverse=True)
 
     return results
 
@@ -137,24 +163,27 @@ def search_debate(debate, topics, candidates):
                 relevant.append((part['video'], x, score))
 
     if relevant:
+        date = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
+
         relevant_transformed = []
         relevant.sort(key = lambda x: x[2], reverse=True)
         for video_link, quotes, _ in relevant:
             relevant_transformed.append({
-                "video": get_video(video_link),
-                "quotes": [{
-                    "speaker": quote['speaker'],
-                    "candidate": quote['speaker'] in debate['candidates'],
-                    "question": quote['question'],
-                    "time": quote['time'],
-                    "text": quote['text']
+                'video': get_video(video_link),
+                'quotes': [{
+                    'speaker': quote['speaker'],
+                    'candidate': quote['speaker'] in debate['candidates'],
+                    'question': quote['question'],
+                    'time': quote['time'],
+                    'text': quote['text']
                 } for quote in quotes]
             })
 
         return {
-            "title": debate['title'],
-            "date": debate['date'],
-            "description": debate['description'],
-            "results": relevant_transformed
+            'title': debate['title'],
+            'date': date,
+            'description': debate['description'],
+            'tags': debate['tags'],
+            'results': relevant_transformed
         }
     return None

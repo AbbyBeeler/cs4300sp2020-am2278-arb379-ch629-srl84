@@ -1,7 +1,9 @@
 import json
 import os
 
+from bson import json_util
 from config import basedir
+from datetime import datetime
 
 
 IRRELEVANT_TEXT_BLOCK = 50
@@ -136,6 +138,9 @@ def annotate_responses(debate):
 
 
 def format_and_annotate(debate):
+    if debate['date'] == datetime.fromisoformat('1970-01-01 00:00:00+00:00'):
+        raise Exception('Debate ' + debate['url'] + '\nMissing date.')
+
     dict_parts_to_name, dict_name_to_parts = generate_speakers_dict(debate)
     fix_addressing(debate, dict_parts_to_name)
     combine_speakers(debate)
@@ -150,20 +155,20 @@ for folder in folders:
         with open(folder + file_name) as f:
             # rev uses weird apostrophes
             data = f.read().replace('’', '\'')
-            debate_dictionary = json.loads(data)
+            debate_dictionary = json.loads(data, object_hook=json_util.object_hook)
 
         format_and_annotate(debate_dictionary)
 
         with open(folder + file_name, 'w', encoding='utf8') as f:
-            json.dump(debate_dictionary, f, default=str, ensure_ascii=False)
+            json.dump(debate_dictionary, f, default=json_util.default, ensure_ascii=False)
 
 
 # # Testing Code
 # # load the files
 # with open(basedir + '/app/data/debates/december-democratic-debate-transcript-sixth-debate-from-los-angeles.json') as f:
-#     debate_dictionary = json.load(f)
+#     debate_dictionary = json.load(f, object_hook=json_util.object_hook)
 # with open('coded.json') as f:
-#     correct = json.load(f)
+#     correct = json.load(f, object_hook=json_util.object_hook)
 #
 # # do all formatting
 # format_and_annotate(debate_dictionary)

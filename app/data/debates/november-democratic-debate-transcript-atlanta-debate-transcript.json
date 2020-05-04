@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "debate"
   ],
-  "date": "2019-11-16",
+  "date": {
+    "$date": 1573862400000
+  },
   "candidates": [
     "Tulsi Gabbard",
     "Amy Klobuchar",

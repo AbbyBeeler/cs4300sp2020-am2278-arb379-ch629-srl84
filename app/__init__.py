@@ -5,7 +5,6 @@ monkey.patch_all()
 # Imports
 import os
 import json
-from collections import defaultdict
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from pymongo import MongoClient

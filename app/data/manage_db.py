@@ -19,7 +19,7 @@ def insert_many_debates(replace, folders=None):
         for file_name in os.listdir(folder):
             if file_name.endswith('.json'):
                 with open(folder + file_name) as f:
-                    debate = json.load(f)
+                    debate = json.load(f, object_hook=json_util.object_hook)
 
                     # delete any debates with same url (redundant if replace)
                     delete_one_debate(debate['url'])
@@ -30,7 +30,7 @@ def insert_many_debates(replace, folders=None):
 def insert_one_debate(file_name):
     # read the debate in as a dictionary
     with open(file_name) as f:
-        debate = json.load(f)
+        debate = json.load(f, object_hook=json_util.object_hook)
 
     # delete any debates with same url
     delete_one_debate(debate['url'])
@@ -60,6 +60,3 @@ def insert_many_polls():
 def delete_one_poll(candidate_race):
     # delete any polls with same candidate and race
     db.polls.delete_many({'candidate_race': candidate_race})
-
-
-insert_many_polls()

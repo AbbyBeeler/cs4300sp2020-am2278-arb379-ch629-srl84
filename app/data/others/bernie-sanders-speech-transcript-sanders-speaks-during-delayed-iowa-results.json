@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "interview"
   ],
-  "date": "2020-02-06",
+  "date": {
+    "$date": 1580947200000
+  },
   "candidates": [
     "Bernie Sanders"
   ],

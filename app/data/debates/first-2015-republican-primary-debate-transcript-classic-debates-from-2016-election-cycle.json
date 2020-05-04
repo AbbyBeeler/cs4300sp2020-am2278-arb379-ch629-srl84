@@ -5,7 +5,9 @@
     "2016 republican presidential primary",
     "debate"
   ],
-  "date": "2015-08-06",
+  "date": {
+    "$date": 1438819200000
+  },
   "candidates": [
     "Ben Carson",
     "Jeb Bush",

@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "debate"
   ],
-  "date": "2020-03-15",
+  "date": {
+    "$date": 1584230400000
+  },
   "candidates": [
     "Joe Biden",
     "Bernie Sanders"

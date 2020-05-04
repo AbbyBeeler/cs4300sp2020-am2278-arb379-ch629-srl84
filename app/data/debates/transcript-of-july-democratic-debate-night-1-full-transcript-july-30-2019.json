@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "debate"
   ],
-  "date": "2019-07-30",
+  "date": {
+    "$date": 1564444800000
+  },
   "candidates": [
     "Amy Klobuchar",
     "John Hickenlooper",

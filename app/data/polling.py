@@ -51,7 +51,7 @@ def format_and_save(file_name, name):
         polls = df_c.to_dict('records')
         if polls:
             nice_results.append({
-                ' ': c + '_' + name,
+                'candidate_race': c + '_' + name,
                 'polls': polls
             })
 

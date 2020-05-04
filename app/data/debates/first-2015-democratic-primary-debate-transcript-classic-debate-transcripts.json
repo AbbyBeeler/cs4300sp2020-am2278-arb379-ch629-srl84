@@ -5,7 +5,9 @@
     "2016 democratic presidential primary",
     "debate"
   ],
-  "date": "2015-10-13",
+  "date": {
+    "$date": 1444694400000
+  },
   "candidates": [
     "Martin O'Malley",
     "Hillary Clinton",

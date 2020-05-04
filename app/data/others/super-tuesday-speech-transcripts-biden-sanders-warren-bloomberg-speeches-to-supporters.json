@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "speech"
   ],
-  "date": "2020-04-21",
+  "date": {
+    "$date": 1587427200000
+  },
   "candidates": [
     "Joe Biden",
     "Mike Bloomberg",

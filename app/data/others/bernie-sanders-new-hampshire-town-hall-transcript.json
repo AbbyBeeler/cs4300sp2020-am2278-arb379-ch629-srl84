@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "town hall"
   ],
-  "date": "2020-02-10",
+  "date": {
+    "$date": 1581292800000
+  },
   "candidates": [
     "Bernie Sanders"
   ],

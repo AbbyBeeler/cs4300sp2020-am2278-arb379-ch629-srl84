@@ -5,7 +5,9 @@
     "2020 democratic presidential primary",
     "debate"
   ],
-  "date": "2019-12-19",
+  "date": {
+    "$date": 1576713600000
+  },
   "candidates": [
     "Amy Klobuchar",
     "Andrew Yang",

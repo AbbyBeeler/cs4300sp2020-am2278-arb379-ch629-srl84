@@ -6,5 +6,7 @@ irsystem = Blueprint('irsystem', __name__, url_prefix='/',
                      static_folder=static_folder,
                      template_folder=template_folder)
 
+TYPE_TAGS = {'debate', 'town hall', 'speech', 'interview'}
+
 # Import all controllers
 from .controllers.search_controller import *
