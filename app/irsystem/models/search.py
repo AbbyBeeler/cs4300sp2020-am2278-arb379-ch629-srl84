@@ -124,8 +124,12 @@ def sort_debates(debate, candidates):
     return response_candidates, date_score
 
 
-def search(topics, candidates, debate_filters):
+def search(topics, candidates, debate_filters, exact):
     # query: (OR candidates) AND (OR filters in title, tags, and description)
+
+    topic_expansion = query_expansion(topics)
+    if not exact: 
+        topics.extend(topic_expansion)
 
     # OR all of the candidates
     # TODO: remove debate filter
@@ -161,7 +165,7 @@ def search(topics, candidates, debate_filters):
 
     results = []
     for debate in filtered_debates:
-        result = search_debate(debate, topics, candidates)
+        result = search_debate(debate, topics, candidates, topic_expansion)
         if result is not None:
             election = next(x for x in debate['tags'] if x not in TYPE_TAGS)
             result['candidates'] = [get_candidate_info(x, election, debate['date']) for x in debate['candidates']]
@@ -176,13 +180,11 @@ def search(topics, candidates, debate_filters):
     for debate in results:
         debate['date'] = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
 
-    return results
+    return results, topic_expansion
 
 
-def search_debate(debate, topics, candidates):
-
-    topic_expansion = query_expansion(topics)
-    topic_expansion.extend(topics)
+def search_debate(debate, topics, candidates, topic_expansion):
+        
     
     relevant = []
     for topic in topics:
