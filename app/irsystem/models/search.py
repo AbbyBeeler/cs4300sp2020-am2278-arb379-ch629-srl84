@@ -158,6 +158,7 @@ def search(topics, candidates, debate_filters):
             election = next(x for x in debate['tags'] if x not in TYPE_TAGS)
             result['candidates'] = [get_candidate_info(x, election, debate['date']) for x in debate['candidates']]
             results.append(result)
+            debate['is_polling'] = True if sum([len(x['polls']) for x in result['candidates']]) else False
 
     # order the debates
     candidates = set(candidates)
