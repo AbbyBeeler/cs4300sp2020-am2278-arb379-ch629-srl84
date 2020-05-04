@@ -86,8 +86,8 @@ def get_candidate_info(candidate_name, election, date):
         polls = sorted(polls['polls'], key=lambda x: x['date'], reverse=True)
 
         shifted_date = date + timedelta(days=1)  # day of polling won't be affected
-        pre_date = date - timedelta(weeks=4)
-        after_date = date + timedelta(weeks=4)
+        pre_date = date - timedelta(weeks=2)
+        after_date = date + timedelta(weeks=2)
 
         # limit after_date to before next debate
         other_debates = db.debates.find_one({'candidates': candidate_name,
@@ -101,12 +101,15 @@ def get_candidate_info(candidate_name, election, date):
         before = next((x for x in polls if pre_date <= x['date'] < shifted_date), False)
         after = next((x for x in polls if shifted_date <= x['date'] <= after_date), False)
 
+        relevant_polls = [x for x in polls[::-1] if date - timedelta(weeks=4) <= x['date'] <= date + timedelta(weeks=4)]
         if before and after and before['pct'] != 0:
             pct_change = round((after['pct'] - before['pct']) / before['pct'] * 100, 2)
-            return {'name': candidate_name, 'pct_change': pct_change}
+            return {'name': candidate_name, 'pct_change': pct_change, 'polls': relevant_polls}
+        else:
+            # can't calculate change if no polls in the range
+            return {'name': candidate_name, 'pct_change': None, 'polls': relevant_polls}
 
-    # can't calculate change if no polls in the range
-    return {'name': candidate_name, 'pct_change': None}
+    return {'name': candidate_name, 'pct_change': None, 'polls': []}
 
 
 def sort_debates(debate, candidates):
