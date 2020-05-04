@@ -6,4 +6,5 @@ def get_candidates():
 
 
 def get_debate_titles_tags():
-    return db.debates.distinct('title') + db.debates.distinct('tags')
+    # db.debates.distinct('tags')
+    return db.debates.find({'tags': 'debate'}).distinct('title')

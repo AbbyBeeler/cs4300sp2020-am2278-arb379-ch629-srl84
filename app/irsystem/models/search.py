@@ -148,6 +148,10 @@ def search(topics, candidates, debate_filters):
     # order debates by date
     results = sorted(results, key=lambda x: x['date'], reverse=True)
 
+    # make date pretty
+    for debate in results:
+        debate['date'] = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
+
     return results
 
 
@@ -163,8 +167,6 @@ def search_debate(debate, topics, candidates):
                 relevant.append((part['video'], x, score))
 
     if relevant:
-        date = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
-
         relevant_transformed = []
         relevant.sort(key = lambda x: x[2], reverse=True)
         for video_link, quotes, _ in relevant:
@@ -181,7 +183,7 @@ def search_debate(debate, topics, candidates):
 
         return {
             'title': debate['title'],
-            'date': date,
+            'date': debate['date'],
             'description': debate['description'],
             'tags': debate['tags'],
             'results': relevant_transformed
