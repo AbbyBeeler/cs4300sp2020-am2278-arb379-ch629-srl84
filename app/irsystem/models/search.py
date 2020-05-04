@@ -80,8 +80,12 @@ def date_comparator(date, poll_dates):
     return min(max(y, date) - min(y, date) for y in poll_dates)
 
 
-def search(topics, candidates, debate_filters):
+def search(topics, candidates, debate_filters, exact):
     # query: (OR candidates) AND (OR filters in title, tags, and description)
+
+    topic_expansion = query_expansion(topics)
+    if not exact: 
+        topics.extend(topic_expansion)
 
     # OR all of the candidates
     # TODO: remove debate filter
@@ -110,7 +114,7 @@ def search(topics, candidates, debate_filters):
 
     results = []
     for debate in debates:
-        result = search_debate(debate, topics, candidates)
+        result = search_debate(debate, topics, candidates, topic_expansion)
         if result is not None:
             results.append(result)
 
@@ -124,10 +128,8 @@ def search(topics, candidates, debate_filters):
     return results
 
 
-def search_debate(debate, topics, candidates):
-
-    topic_expansion = query_expansion(topics)
-    topic_expansion.extend(topics)
+def search_debate(debate, topics, candidates, topic_expansion):
+        
     
     relevant = []
     for topic in topics:

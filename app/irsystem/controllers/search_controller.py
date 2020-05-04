@@ -11,7 +11,18 @@ def debates():
     candidates = data['candidates']
     debate_filters = data['debates']
 
-    results = search(topics, candidates, debate_filters)
+    results = search(topics, candidates, debate_filters, True)
+    return {'results': results}
+
+@irsystem.route('/exactsearch', methods=['POST'])
+def esearch():
+    data = request.get_json()
+    # data format: {'topics': [], 'candidates': [], 'debates': []}
+    topics = data['topics']
+    candidates = data['candidates']
+    debate_filters = data['debates']
+
+    results = search(topics, candidates, debate_filters, False)
     return {'results': results}
 
 
