@@ -38,7 +38,8 @@ input[type=text]:focus {
 }
 
 .text-input {
-    border: 2px solid black;
+    border: 1px solid lightgray;
+    border-radius: 5px;
     width: 500px;
     display: flex; 
     flex-direction: row;
@@ -134,4 +135,11 @@ input[type=text]:focus {
 
 .plus-button:hover {
     cursor: pointer;
+}
+
+.plus-button-icon {
+    transition: transform 0.7s ease-in-out;
+}
+.plus-button-icon:hover {
+    transform: rotate(360deg);
 }

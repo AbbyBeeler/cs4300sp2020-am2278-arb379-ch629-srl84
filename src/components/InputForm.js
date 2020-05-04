@@ -1,5 +1,7 @@
 import React from 'react';
 import './InputForm.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {  faPlus } from '@fortawesome/free-solid-svg-icons'
 
 const types = ['topic', 'candidate', 'debate']
 const colors = ['#29335C', '#DB2B39', '#F3A712']
@@ -18,6 +20,7 @@ class InputForm extends React.Component {
         this.handleKeyDown = this.handleKeyDown.bind(this)
         this.removeItem = this.removeItem.bind(this)
     }
+    
     componentDidMount() {
         fetch('/candidates', {
             method: 'get',
@@ -76,28 +79,62 @@ class InputDropdown extends React.Component {
         this.state = {
             value: '', 
             filteredOptions: [], 
-            focused: false
+            focused: false, 
+            canClose: true, 
+            currrentKey: 0
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleKeyDown = this.handleKeyDown.bind(this)
         this.handleSelect = this.handleSelect.bind(this)
         this.removeItem = this.removeItem.bind(this)
-        // this.handleBlur = this.handleBlur.bind(this)
         this.handleFocus = this.handleFocus.bind(this)
+        this.handleBlur = this.handleBlur.bind(this)
         this.handlePlusClick = this.handlePlusClick.bind(this)
+        this.handleMouseLeave = this.handleMouseLeave.bind(this)
+        this.handleMouseOver = this.handleMouseOver.bind(this)
     }
     handleChange(event) {
         this.setState({
             value: event.target.value
         }, () => {
-            console.log(this.state.value)
+            const {options,inputs} = this.props
+            if (options) {
+                if (this.state.value !== '') {
+                    this.setState({
+                        filteredOptions: options.filter(el=>el.toLowerCase().includes(this.state.value.toLowerCase()))
+                    }, () => {
+                        if (inputs.length !== 0) {
+                            inputs.forEach(input=> {
+                                this.setState({
+                                    filteredOptions: this.state.filteredOptions.filter(el=> el !== input)
+                                })
+                            })
+                            
+                        }
+                    }) 
+                } else {
+                    this.setState({
+                        filteredOptions: options
+                    }, () => {
+                        if (inputs.length !== 0) {
+                            inputs.forEach(input=> {
+                                this.setState({
+                                    filteredOptions: this.state.filteredOptions.filter(el=> el !== input)
+                                })
+                            })
+                            
+                        }
+                    })
+                } 
+                
+            }
         })
     }
     handleKeyDown(event) {
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            console.log('this worked')
+        let msg;
+        if ((event.key === 'Enter' || event.key === 'Tab') && ((this.state.filteredOptions && this.state.filteredOptions.length === 0) || (!this.state.filteredOptions))) {
             if (this.state.value !== '') {
-                const msg = {
+                msg = {
                     type: this.props.type, 
                     value: this.state.value
                 }
@@ -106,8 +143,27 @@ class InputDropdown extends React.Component {
                 value: ''
             })
         }
+    }
+        else if (event.key === 'Enter' && this.state.filteredOptions && this.state.filteredOptions.length > 0) {
+            msg = {
+                type: this.props.type, 
+                value: this.state.filteredOptions[this.state.currentKey]
+            }
+            this.props.handleKeyDown(msg)
+            this.setState({
+                value: '', 
+                filteredOptions: this.state.filteredOptions.filter(e=> e!==msg.value)
+            })
         } else if (event.key === 'Backspace' && this.state.value === '') {
             this.props.removeItem('', this.props.type)
+        } else if (event.key === 'ArrowDown' && (this.state.filteredOptions.length > this.state.currentKey)) {
+                this.setState({
+                    currentKey: this.state.currentKey + 1
+                })  
+        } else if (event.key === 'ArrowUp') {
+            this.setState({
+                currentKey: this.state.currentKey - 1
+            })
         }
     }
     removeItem(name) {
@@ -124,7 +180,8 @@ class InputDropdown extends React.Component {
         }
         this.props.handleKeyDown(msg)
         this.setState({
-            value: ''
+            value: '', 
+            filteredOptions: this.state.filteredOptions.filter(e=> e!==msg.value)
         })
     }
     handlePlusClick() {
@@ -142,26 +199,35 @@ class InputDropdown extends React.Component {
     }
     handleFocus(){
         this.setState({
-            focused: true
+            focused: true, 
+            currentKey: 0, 
+            filteredOptions: this.props.options
+        })
+    }
+    handleBlur(){
+        if (this.state.canClose) {
+            this.setState({
+                focused: false, 
+                currentKey: 0
+            })
+        }
+        
+    }
+    handleMouseOver() {
+        this.setState({
+            canClose: false
+        })
+    }
+    handleMouseLeave() {
+        this.setState({
+            canClose: true
         })
     }
     render() {
-        const {inputs, type, options} = this.props
+        const {inputs, type} = this.props
+        const {filteredOptions} = this.state
         let placeholder = this.props.placeholder
-        let filteredOptions;
-        if (options) {
-            if (this.state.value !== '') {
-                filteredOptions = options.filter(el=>el.toLowerCase().includes(this.state.value.toLowerCase()))
-            } else {
-                filteredOptions = options
-            } 
-            if (inputs.length !== 0) {
-                inputs.forEach(input=> {
-                    filteredOptions = filteredOptions.filter(el=> el !== input)
-                })
-                
-            }
-        }
+        
         if (inputs.length !== 0) {
             placeholder = ''
         }
@@ -175,13 +241,17 @@ class InputDropdown extends React.Component {
                                 })
                             }
                             <input onFocus={this.handleFocus} onBlur={this.handleBlur} value = {this.state.value} placeholder={placeholder} className="input-candidate" type="text" onChange = {this.handleChange} onKeyDown={this.handleKeyDown} ></input>
-                            <div className="plus-button" onClick={this.handlePlusClick}>+</div>
+                            <div className="plus-button" onClick={this.handlePlusClick}><FontAwesomeIcon className="plus-button-icon" icon={faPlus} /></div>
                             </div>
                             
-                        {filteredOptions && <div className="input-dropdown" style={{display: this.state.focused ? 'block' : 'none'}}>
+                        {filteredOptions && <div id="dropdown" onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} className="input-dropdown" style={{display: this.state.focused ? 'block' : 'none'}}>
                             {
-                                filteredOptions.map(el => {
-                                    return <InputDropdownOption inputValue={this.state.value} item={el} handleSelect={this.handleSelect} />
+                                filteredOptions.map((el,i) => {
+                                    let selectedItem = false;
+                                    if (this.state.currentKey === i) {
+                                        selectedItem = true
+                                    }
+                                    return <InputDropdownOption selectedItem={selectedItem} onClick ={(e) => e.stopPropagation()} inputValue={this.state.value} item={el} handleSelect={this.handleSelect} />
                                 })
                             }
                         </div>}
@@ -197,13 +267,12 @@ class InputDropdownOption extends React.Component {
         this.handleSelect = this.handleSelect.bind(this);
     }
     handleSelect() {
-        console.log(this.props.item)
         this.props.handleSelect(this.props.item);
     }
     render() {
         
         return(
-            <div onClick={this.handleSelect} className="input-dropdown-item"> {this.props.item}</div> 
+            <div style={{backgroundColor: this.props.selectedItem ? '#dadada' : ''}} onClick={this.handleSelect} className="input-dropdown-item"> {this.props.item}</div> 
         )
     }
 }
@@ -217,6 +286,7 @@ class InputItem extends React.Component {
     handleClick() {
         const {itemName} = this.props
         this.props.removeItem(itemName)
+        
     }
     render(){
         const { itemName, type } = this.props

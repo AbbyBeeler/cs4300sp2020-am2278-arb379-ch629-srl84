@@ -9,6 +9,7 @@
 .debate-title {
     font-size: 24px;
     font-weight: bold;
+    padding-right: 20px;
 }
 .debate-date {
     font-size: 14px;
@@ -16,11 +17,14 @@
 
 .debate-description {
     margin-top: 8px;
-    font-size: 14px;
+    font-size: 14px; 
+    font-weight: 500;
     padding-bottom: 16px;
+    letter-spacing: -0.02em;
+    
 }
 
-.debate-title-wrapper:hover {
+.debate-beg:hover {
     color: rgba(0, 0, 0, 0.411); 
     cursor: pointer;
 }
@@ -32,3 +36,16 @@
     justify-content: space-between;
 }
 
+.debate-beg {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+}
+
+.debate-polling {
+    padding-right: 20px;
+}
+
+.debate-polling:hover {
+    cursor: pointer
+}
