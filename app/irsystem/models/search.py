@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pymongo
 import spacy
@@ -109,6 +109,18 @@ def get_candidate_info(candidate_name, election, date):
     return {'name': candidate_name, 'pct_change': None}
 
 
+def sort_debates(debate, candidates):
+    # order by number of searched candidates that were returned
+    quote_speakers = {c['speaker'] for r in debate['results'] for c in r['quotes']}
+    response_candidates = len(quote_speakers.intersection(candidates))
+
+    # then order by combination of time since debate and total score of quotes
+    half_years = (datetime.now() - debate['date']).days // 180 + 1
+    date_score = debate['total_score'] / half_years
+
+    return response_candidates, date_score
+
+
 def search(topics, candidates, debate_filters):
     # query: (OR candidates) AND (OR filters in title, tags, and description)
 
@@ -123,7 +135,6 @@ def search(topics, candidates, debate_filters):
     # AND all words in a debate filter, OR the filters
     debates = []
     for debate in db.debates.find(debate_query):
-        # TODO: tags?
         # filter debates by title, tags, and description
         debate_text = tokenize(debate['title']).union(
             tokenize(debate['description'])).union(
@@ -145,10 +156,11 @@ def search(topics, candidates, debate_filters):
             result['candidates'] = [get_candidate_info(x, election, debate['date']) for x in debate['candidates']]
             results.append(result)
 
-    # order debates by date
-    results = sorted(results, key=lambda x: x['date'], reverse=True)
+    # order the debates
+    candidates = set(candidates)
+    results.sort(key=lambda x: sort_debates(x, candidates), reverse=True)
 
-    # make date pretty
+    # make dates pretty
     for debate in results:
         debate['date'] = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
 
@@ -169,7 +181,9 @@ def search_debate(debate, topics, candidates):
     if relevant:
         relevant_transformed = []
         relevant.sort(key = lambda x: x[2], reverse=True)
-        for video_link, quotes, _ in relevant:
+        total_score = 0
+        for video_link, quotes, score in relevant:
+            total_score += score
             relevant_transformed.append({
                 'video': get_video(video_link),
                 'quotes': [{
@@ -186,6 +200,7 @@ def search_debate(debate, topics, candidates):
             'date': debate['date'],
             'description': debate['description'],
             'tags': debate['tags'],
-            'results': relevant_transformed
+            'results': relevant_transformed,
+            'total_score': total_score
         }
     return None
