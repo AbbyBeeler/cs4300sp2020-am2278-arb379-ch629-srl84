@@ -125,7 +125,7 @@ def search(topics, candidates, debate_filters, exact):
     else:
         results = sorted(results, key=lambda x: datetime.fromisoformat(x['date']), reverse=True)
 
-    return results
+    return results, topic_expansion
 
 
 def search_debate(debate, topics, candidates, topic_expansion):
