@@ -136,29 +136,37 @@ def search(topics, candidates, debate_filters):
         debate_query['$or'] = [{'candidates': candidate} for candidate in candidates]
 
     # AND all words in a debate filter, OR the filters
-    debates = []
-    for debate in db.debates.find(debate_query):
-        # filter debates by title, tags, and description
-        debate_text = tokenize(debate['title']).union(
-            tokenize(debate['description'])).union(
-            tokenize(' '.join(debate['tags'])))
+    debates = list(db.debates.find(debate_query))
+    if not debate_filters:
+        filtered_debates = debates
+    else:
+        filtered_debates = []
 
-        if not debate_filters:
-            debates.append(debate)
-        for debate_filter in debate_filters:
-            words = tokenize(debate_filter)
-            if words.issubset(debate_text):
-                debates.append(debate)
-                break
+        title_filters = set(x['title'] for x in debates if x['title'] in debate_filters)
+        other_filters = [x for x in debate_filters if x not in title_filters]
+        for debate in debates:
+            if debate['title'] in title_filters:
+                filtered_debates.append(debate)
+            else:
+                # filter debates by title, tags, and description
+                debate_text = tokenize(debate['title']).union(
+                    tokenize(debate['description'])).union(
+                    tokenize(' '.join(debate['tags'])))
+
+                for debate_filter in other_filters:
+                    words = tokenize(debate_filter)
+                    if words.issubset(debate_text):
+                        filtered_debates.append(debate)
+                        break
 
     results = []
-    for debate in debates:
+    for debate in filtered_debates:
         result = search_debate(debate, topics, candidates)
         if result is not None:
             election = next(x for x in debate['tags'] if x not in TYPE_TAGS)
             result['candidates'] = [get_candidate_info(x, election, debate['date']) for x in debate['candidates']]
             results.append(result)
-            debate['is_polling'] = True if sum([len(x['polls']) for x in result['candidates']]) else False
+            result['is_polling'] = True if sum([len(x['polls']) for x in result['candidates']]) else False
 
     # order the debates
     candidates = set(candidates)
