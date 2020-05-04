@@ -16,8 +16,12 @@ def smooth(temp):
     # smoothing
     temp.avg_pct = temp.pct.rolling(20, min_periods=1, center=True).mean()
     temp.avg_pct = temp.avg_pct.rolling(20, min_periods=1, center=True).mean()
-    temp.avg_pct = temp.avg_pct.round(2)
 
+    # averaging multiple polls in one day
+    temp = temp.groupby(by=[temp.created_at.dt.date]).avg_pct.mean().reset_index()
+    temp.created_at = pd.to_datetime(temp.created_at)
+
+    temp.avg_pct = temp.avg_pct.round(2)
     return temp
 
 
@@ -38,10 +42,10 @@ def format_and_save(file_name, name):
     # fix date and sort by it
     df_filtered.created_at = pd.to_datetime(df_filtered.created_at)
     df_filtered = df_filtered.sort_values(by=['created_at'])
-    df_filtered.reset_index(inplace=True)
+    df_filtered.reset_index(drop=True, inplace=True)
 
     # smooth the data
-    df_filtered2 = df_filtered.groupby(by='answer').apply(smooth).reset_index(drop=True)
+    df_filtered2 = df_filtered.groupby(by='answer').apply(smooth).reset_index()
 
     # save to json by candidate
     nice_results = []

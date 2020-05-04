@@ -165,6 +165,7 @@ def search(topics, candidates, debate_filters):
         if result is not None:
             election = next(x for x in debate['tags'] if x not in TYPE_TAGS)
             result['candidates'] = [get_candidate_info(x, election, debate['date']) for x in debate['candidates']]
+            result['candidates'].sort(key=lambda x: x['polls'][-1]['pct'] if x['polls'] else 0, reverse=True)
             results.append(result)
             result['is_polling'] = True if sum([len(x['polls']) for x in result['candidates']]) else False
 

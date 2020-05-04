@@ -110,10 +110,10 @@ class Quote extends React.Component {
                     <div className="candidate-speaker">{speaker}</div>
                     {polling.pct_change && <div className="candidate-polling">
                         <FontAwesomeIcon icon={polling.pct_change > 0 ? faArrowUp : faArrowDown} color={polling.pct_change > 0 ? 'green' : 'red' }/>
-                        <div className="candidate-percent">{polling.pct_change}</div>
+                        <div className="candidate-percent">{`${polling.pct_change}%`}</div>
                     </div>}
                         </div> } 
-                <div onClick = {this.handleClick}className="quote-wrapper" style={style}>
+                <div onClick = {this.handleClick} className="quote-wrapper" style={style}>
                     <div>{!candidate && <strong>{speaker}</strong>}<span>{ ' (' + time + ') '}</span>
                     <span className="quote-text">{ innertext }</span></div>
 
