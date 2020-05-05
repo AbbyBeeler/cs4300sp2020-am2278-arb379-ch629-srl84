@@ -10,6 +10,7 @@
     font-size: 24px;
     font-weight: bold;
     padding-right: 20px;
+    line-height: 24px;;
 }
 .debate-date {
     font-size: 14px;
@@ -45,6 +46,10 @@
 .debate-polling {
     padding-right: 20px;
     font-weight: bold;
+    margin-left: 40px;
+    text-align: right;
+    line-height: 18px;
+
 }
 
 .debate-polling:hover {
