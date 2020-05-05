@@ -16,10 +16,7 @@
     "react-anime": "^3.0.3",
     "react-chartkick": "^0.4.0",
     "react-dom": "^16.13.1",
-<<<<<<< HEAD
-=======
     "react-faux-dom": "^4.5.0",
->>>>>>> 3c780bc2c0a72b720b0c586a0a50797ae5ad9926
     "react-scripts": "3.4.1",
     "react-select": "^3.1.0"
   },
