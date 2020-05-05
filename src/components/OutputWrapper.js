@@ -1,7 +1,7 @@
-import React from 'react';
-import DebateItem from './DebateItem';
-import Anime from 'react-anime';
 import './OutputWrapper.css'
+import Anime from 'react-anime'
+import React from 'react';
+import DebateItem from './DebateItem'
 
 class OutputWrapper extends React.Component {
     constructor(props){
@@ -18,7 +18,6 @@ class OutputWrapper extends React.Component {
             this.setState({
                 animeProps: undefined
             })
-            console.log('false to false')
         } else if (prevProps.loading === false && this.props.loading === true){
             this.setState({
                 animeProps: {
@@ -28,7 +27,6 @@ class OutputWrapper extends React.Component {
                 }
             })
 
-            console.log('false to true')
         }
     }
     render() {
@@ -63,7 +61,8 @@ class OutputWrapper extends React.Component {
         return (
             <div className="output-wrapper">
                 {this.props.loading &&  <LoadingSpinner/> }
-                { !this.props.loading && anime }
+                { !this.props.loading && <Anime {...animeProps}>
+                 {debateItems} </Anime>}
             </div>
         )
     }
@@ -71,15 +70,15 @@ class OutputWrapper extends React.Component {
 
 function LoadingSpinner(props) {
     return (
-        <div class="sk-chase">
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
+        <div className="sk-chase">
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
         </div>
     )
 }
 
-export default OutputWrapper
+export default OutputWrapper 

@@ -38,7 +38,7 @@ class ResultItem extends React.Component {
     }
     render() {
         const {video, quotes, inputs, candidates} = this.props
-        const quoteItems = quotes.map(quote => {
+        const quoteItems = quotes.map((quote,i) => {
             const polling = candidates.find((el) => el.name === quote.speaker)
             return (
                 <Quote
@@ -49,6 +49,7 @@ class ResultItem extends React.Component {
                 inputs={inputs}
                 candidate={quote.candidate}
                 polling={polling}
+                key={i}
             ></Quote>
             )
         }
@@ -82,8 +83,8 @@ class Quote extends React.Component {
         const words = text.split(regexp)
 
         const innertext = words.map((word,i) => {
-            if (i%2 === 0) return <span>{word}</span>
-            else return <span className="highlight">{word}</span>
+            if (i%2 === 0) return <span key={i}>{word}</span>
+            else return <span key={i} className="highlight">{word}</span>
         })
         let picture; 
         let style;

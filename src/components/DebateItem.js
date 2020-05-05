@@ -25,12 +25,13 @@ class DebateItem extends React.Component {
     }
     render() {
         const { title, date, description, results, inputs, candidates, isPolling } = this.props;
-        const resultItems = results.map((result) =>
+        const resultItems = results.map((result,i) =>
             <ResultItem 
                 video={result.video}
                 quotes={result.quotes}
                 inputs={inputs}
                 candidates={candidates}
+                key={i}
             ></ResultItem>
         )
         const degrees = this.state.openItem ? 90 : 0
