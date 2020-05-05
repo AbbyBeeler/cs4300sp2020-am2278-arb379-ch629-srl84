@@ -20,67 +20,75 @@ stemmer = SnowballStemmer('english')
 
 # if i is in result, return the exchange
 # otherwise, create a new one
-def get_exchange(i, transcript, added, result, topic, topic_expansion):
+def get_exchange(i, transcript, added, result, topics, topic_expansion):
     if i in result:
         return result[i]
     elif i in added:
         # must be a response
-        return get_exchange(transcript[i]['response'], transcript, added, result, topic, topic_expansion)
+        return get_exchange(transcript[i]['response'], transcript, added, result, topics, topic_expansion)
     else:
         added.add(i)
-        score = transcript[i]['text'].count(topic) + sum(transcript[i]['text'].count(t)/2 for t in topic_expansion)
+        score = sum(transcript[i]['text'].lower().count(topic)*2 for topic in topics)
+        score += sum(transcript[i]['text'].lower().count(topic)*0.5 for topic in topic_expansion)
         result[i] = ([transcript[i]], score)
         return result[i]
 
 
-def exact_search(added, result, transcript, topic, candidates, topic_expansion):
-    topic = topic.lower()
+def exact_search(transcript, topics, candidates, topic_expansion):
+    added = set()
+    result = dict()
     for i, quote in enumerate(transcript):
-        if i not in added and topic in quote['text'].lower() and (quote['speaker'] in candidates or len(candidates) == 0):
+        if i not in added and (quote['speaker'] in candidates or len(candidates) == 0):
             # if in questions, then add question and all responses
             if quote['question'] and quote['response']:
-                exchange = [quote]
-                added.add(i)
-                score = (quote['text'].count(topic)*2)
-                score += sum(quote['text'].count(t)/2 for t in topic_expansion)
-                for i2, q in enumerate(quote['response']):
-                    # if same speaker is continuing
-                    if len(exchange) > 1 and transcript[q]['speaker'] == exchange[-1]['speaker']:
-                        # uninterrupted
-                        if i2 > 0 and transcript[quote['response'][i2-1]]['text'] in exchange[-1]['text']:
-                            exchange[-1]['text'] += ' ' + transcript[q]['text']
-                        # interrupted
+                score = sum(quote['text'].lower().count(topic)*2 for topic in topics)
+                score += sum(quote['text'].lower().count(topic)*0.5 for topic in topic_expansion)
+                if score > 0:
+                    exchange = [quote]
+                    added.add(i)
+                    for i2, q in enumerate(quote['response']):
+                        # if same speaker is continuing
+                        if len(exchange) > 1 and transcript[q]['speaker'] == exchange[-1]['speaker']:
+                            # uninterrupted
+                            if i2 > 0 and transcript[quote['response'][i2-1]]['text'] in exchange[-1]['text']:
+                                exchange[-1]['text'] += ' ' + transcript[q]['text']
+                            # interrupted
+                            else:
+                                exchange[-1]['text'] += ' ... ' + transcript[q]['text']
                         else:
-                            exchange[-1]['text'] += ' ... ' + transcript[q]['text']
-                    else:
-                        exchange.append(transcript[q])
-                    score += sum(transcript[q]['text'].count(t)/2 for t in topic_expansion)
-                    score += transcript[q]['text'].count(topic)
-                    added.add(q)
-                result[i] = (exchange, score)
+                            exchange.append(transcript[q])
+                        score += sum(transcript[q]['text'].lower().count(topic) for topic in topics)
+                        score += sum(transcript[q]['text'].lower().count(topic)*0.5 for topic in topic_expansion)
+                        added.add(q)
+                    result[i] = (exchange, score)
             # otherwise only add question (if not already) and response
             elif not quote['question'] and type(quote['response']) == int:
-                added.add(i)
-                first_i = quote['response']
-                exchange, score = get_exchange(first_i, transcript, added, result, topic, topic_expansion)
-                # if same speaker is continuing
-                if len(exchange) > 1 and quote['speaker'] == exchange[-1]['speaker']:
-                    # uninterrupted
-                    if i > 0 and transcript[i-1]['text'] in exchange[-1]['text']:
-                        exchange[-1]['text'] += ' ' + quote['text']
-                    # interrupted
+                new_score = sum(quote['text'].lower().count(topic) for topic in topics)
+                new_score += sum(quote['text'].lower().count(topic)*0.5 for topic in topic_expansion)
+                if new_score > 0:
+                    added.add(i)
+                    first_i = quote['response']
+                    exchange, score = get_exchange(first_i, transcript, added, result, topics, topic_expansion)
+                    # if same speaker is continuing
+                    if len(exchange) > 1 and quote['speaker'] == exchange[-1]['speaker']:
+                        # uninterrupted
+                        if i > 0 and transcript[i-1]['text'] in exchange[-1]['text']:
+                            exchange[-1]['text'] += ' ' + quote['text']
+                        # interrupted
+                        else:
+                            exchange[-1]['text'] += ' ... ' + quote['text']
                     else:
-                        exchange[-1]['text'] += ' ... ' + quote['text']
-                else:
-                    exchange.append(quote)
-                score = score + quote['text'].count(topic) + sum(quote['text'].count(t)/2 for t in topic_expansion)
-                result[first_i] = (exchange, score)
+                        exchange.append(quote)
+                    result[first_i] = (exchange, score + new_score)
             # if not a response to anything, create new chain
             elif not quote['question'] and quote['response'] is None:
-                added.add(i)
-                score = transcript[i]['text'].count(topic) + sum(transcript[i]['text'].count(t)/2 for t in topic_expansion)
-                result[i] = ([transcript[i]], score)
-    return added, result
+                score = sum(quote['text'].lower().count(topic) for topic in topics)
+                score += sum(quote['text'].lower().count(topic)*0.5 for topic in topic_expansion)
+                if score > 0:
+                    added.add(i)
+                    result[i] = ([quote], score)
+
+    return result.values()
 
 
 def query_expansion(topics): 
@@ -90,7 +98,7 @@ def query_expansion(topics):
         for token in tokens: 
             if token in term_dictionary:
                 expansion.extend([term_dictionary[token][i] for i in range(3)])
-    return expansion
+    return set(expansion)
 
 
 # tokenize, lemmatize, lowercase, and filter out stop words and punctuation
@@ -148,9 +156,8 @@ def search(topics, candidates, debate_filters, exact):
     # query: (OR candidates) AND (OR filters in title, tags, and description)
 
     topic_expansion = query_expansion(topics)
-    if not exact: 
-        topics.extend(topic_expansion)
-        topic_expansion = []
+    if exact:
+        topic_expansion = set()
 
     # OR all of the candidates
     if len(candidates) == 0:
@@ -202,22 +209,19 @@ def search(topics, candidates, debate_filters, exact):
     for debate in results:
         debate['date'] = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
 
-    return results, topics
+    return results, list(topic_expansion)
 
 
 def search_debate(debate, topics, candidates, topic_expansion):
     relevant = []
+
     for part in debate['parts']:
-        added = set()
-        result = dict()
-        for topic in topics:
-            added, result = exact_search(added, result, part['text'], topic, candidates, topic_expansion)
-        for x, score in result.values():
+        for x, score in exact_search(part['text'], topics, candidates, topic_expansion):
             relevant.append((part['video'], x, score))
 
     if relevant:
         relevant_transformed = []
-        relevant.sort(key = lambda x: x[2], reverse=True)
+        relevant.sort(key=lambda x: x[2], reverse=True)
         total_score = 0
         for video_link, quotes, score in relevant:
             total_score += score
