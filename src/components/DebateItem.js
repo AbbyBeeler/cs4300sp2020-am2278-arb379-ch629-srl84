@@ -25,7 +25,6 @@ class DebateItem extends React.Component {
     }
     render() {
         const { title, date, description, results, inputs, candidates, isPolling } = this.props;
-        console.log(isPolling)
         const resultItems = results.map((result) =>
             <ResultItem 
                 video={result.video}
@@ -47,10 +46,10 @@ class DebateItem extends React.Component {
                 <div>
                     <div className="debate-title-wrapper" >
                         <div className="debate-beg">
-                        <div className="debate-title" onClick={this.handleClick} >{title}</div>
-                        <Anime {...animePropsIcon}>
-                            <FontAwesomeIcon icon={faChevronRight} />
-                        </Anime>
+                            <div className="debate-title" onClick={this.handleClick} >{title}</div>
+                            <Anime {...animePropsIcon}>
+                                <FontAwesomeIcon icon={faChevronRight} />
+                            </Anime>
                         </div>
                         {isPolling && <div className="debate-polling" onClick = {this.handleModalOpen}>Polling Data</div> }
                     </div>

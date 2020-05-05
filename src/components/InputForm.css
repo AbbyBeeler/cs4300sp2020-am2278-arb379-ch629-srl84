@@ -143,3 +143,36 @@ input[type=text]:focus {
 .plus-button-icon:hover {
     transform: rotate(360deg);
 }
+
+.input-info {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+    margin-left: 50px;
+}
+.info-icon {
+    font-size: 24px;
+    width: 50px;
+    position: relative;
+    display: inline-block;
+}
+
+.info-icon .info-icon-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: rgb(59, 59, 59);
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .info-icon:hover .info-icon-text {
+    visibility: visible;
+  }

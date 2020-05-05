@@ -1,7 +1,7 @@
 import React from 'react';
 import './InputForm.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {  faPlus } from '@fortawesome/free-solid-svg-icons'
+import {  faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 
 const types = ['topic', 'candidate', 'debate']
 const colors = ['#29335C', '#DB2B39', '#F3A712']
@@ -64,7 +64,12 @@ class InputForm extends React.Component {
         const { debateOptions, candidateOptions, candidates, debates, topics } = this.state
         return (
             <div className="input-form-wrapper">
-                    <InputDropdown placeholder="topics: climate change" removeItem={this.removeItem} type="topics" inputs={topics} onChange={this.handleChange} handleKeyDown={this.handleKeyDown}/>
+                    <div className="input-info"><InputDropdown placeholder="topics: climate change" removeItem={this.removeItem} type="topics" inputs={topics} onChange={this.handleChange} handleKeyDown={this.handleKeyDown}/>
+                    <div className="info-icon">
+                        <FontAwesomeIcon icon={faInfoCircle}/>
+                        <span className="info-icon-text">Put in topics you're interested in.<br/> Some examples are: healthcare, terrorism, gun policy, taxes, education, economy, immigration, abortion, climate change, war, coronavirus</span>
+                        </div>
+                        </div>
                     <InputDropdown  placeholder="candidates: Bernie Sanders" removeItem={this.removeItem} type="candidates" options={candidateOptions} inputs={candidates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown}/>
                     <InputDropdown placeholder="debates: New Hampshire Democratic Debate" removeItem={this.removeItem} type="debates" options={debateOptions} inputs={debates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown}/>
                     <input className="button-add" type="button" onClick={this.handleSubmit} value="Search" ></input>
