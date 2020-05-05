@@ -29,6 +29,7 @@ class App extends React.Component {
     this.setState({
       input: newInput, 
       loading: true,
+      queryWords: []
     }, ()=>{
       let endpoint; 
       if (this.state.enableQueryExpansion) endpoint = '/search'
@@ -105,7 +106,7 @@ class App extends React.Component {
       <h1 className="app-title">Shortened Debates.</h1>
       <p className="app-description">watch the important moments on the issues you care most about.</p>
       <InputWrapper onInputChange={this.sendInputInformation} onClear={this.onClear}/>
-      {queryWords && (queryWords.length !==0) && <QueryExpansion loading={this.state.loading} enable={enableQueryExpansion} handleEnable = {this.handleEnable} query={queryWords}/>}
+      {queryWords && <QueryExpansion loading={this.state.loading} enable={enableQueryExpansion} handleEnable = {this.handleEnable} query={queryWords}/>}
       <OutputWrapper queryWords={ enableQueryExpansion ? queryWords : undefined} handleAnimate = {this.handleAnimate} handleModalOpen={this.handleModalOpen} inputs={this.state.input} loading={this.state.loading} outputs={this.state.output} animateOnce={this.state.animateOnce}></OutputWrapper>
       <Modal candidates={modalIndex>=0 && output[modalIndex].candidates} title={modalIndex>=0 && output[modalIndex].title} date={modalIndex>=0 && output[modalIndex].date} closeItem={this.handleModalClose} open={this.state.openModal} />
     </div>
@@ -148,21 +149,41 @@ class QueryExpansion extends React.Component {
   constructor(props) {
     super(props); 
     this.handleClick = this.handleClick.bind(this)
+    this.state = {
+      warningMessage: false
+    }
   }
   handleClick() {
-    this.props.handleEnable();
+    if (this.props.enable && this.props.query.length === 1) {
+      this.setState({
+        warningMessage: true
+      }) 
+    } else {
+      this.setState({
+        warningMessage: false
+      })
+      this.props.handleEnable();
+    }
+    
   }
   render() {
     const text = this.props.query.join(', ')
 
-    const messageText = this.props.enable ? 'Showing results for related terms: ' : 'Showing results for: '
+    const notAvailable = (this.props.enable && this.props.query.length === 1);
+    let messageText = this.props.enable ? 'Showing results for related terms: ' : 'Showing results for: '
 
-    const buttonText = this.props.enable ? 'Disable Query Expansion' : 'Enable Query Expansion'
+    messageText =  notAvailable ? 'Showing results for: ' : messageText
+
+    let buttonText = this.props.enable ? 'Disable Query Expansion' : 'Enable Query Expansion'
+
+    buttonText = notAvailable ? 'Query Expansion Not Available' : buttonText
+
 
     return(
       <div className="query-expansion">
         <div className="query-button" onClick = {this.handleClick}>{buttonText}</div>
         <div>{!this.props.loading && messageText + text}</div>
+         <div className="query-warning">{(this.state.warningMessage && notAvailable) ? 'Not enough like terms to access query expansion, try another input' : ''}</div>
       </div>
     )
   }

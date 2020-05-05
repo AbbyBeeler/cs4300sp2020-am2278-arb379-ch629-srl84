@@ -82,7 +82,7 @@ class InputForm extends React.Component {
                     <div className="input-info"><InputDropdown placeholder="topics: climate change" removeItem={this.removeItem} type="topics" inputs={topics} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={this.state.topicsValue}/>
                     <div className="info-icon">
                         <FontAwesomeIcon icon={faInfoCircle}/>
-                        <span className="info-icon-text">Put in topics you're interested in.<br/> Some examples are: healthcare, terrorism, gun policy, taxes, education, economy, immigration, abortion, climate change, war, coronavirus</span>
+                        <span className="info-icon-text">Input topics of interest.<br/> Some examples: healthcare, terrorism, gun policy, taxes, education, economy, immigration, abortion, climate change, war, coronavirus</span>
                         </div>
                         </div>
                     <InputDropdown  placeholder="candidates: Bernie Sanders" removeItem={this.removeItem} type="candidates" options={candidateOptions} inputs={candidates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={''}/>
