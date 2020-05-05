@@ -43,7 +43,7 @@ def exact_search(transcript, topic, candidates, topic_expansion):
             if quote['question'] and quote['response']:
                 exchange = [quote]
                 added.add(i)
-                score = quote['text'].count(topic)
+                score = (quote['text'].count(topic)*2)
                 score += sum(quote['text'].count(t)/2 for t in topic_expansion)
                 for q in quote['response']:
                     exchange.append(transcript[q])
