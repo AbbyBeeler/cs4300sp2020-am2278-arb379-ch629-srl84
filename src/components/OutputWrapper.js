@@ -4,9 +4,34 @@ import React from 'react';
 import DebateItem from './DebateItem'
 
 class OutputWrapper extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            animeProps: undefined
+        }
+    }
+    handleModalOpen = (index) => {
+        this.props.handleModalOpen(index)
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.loading === false && this.props.loading===false && this.state.animeProps) {
+            this.setState({
+                animeProps: undefined
+            })
+        } else if (prevProps.loading === false && this.props.loading === true){
+            this.setState({
+                animeProps: {
+                    opacity: [0,1],
+                    translateY: [-64,0], 
+                    delay: (el,i) => i*200
+                }
+            })
 
+        }
+    }
     render() {
-        const input = Object.keys(this.props.inputs).length !== 0 && Object.values(this.props.inputs).flat()
+        let input = Object.keys(this.props.inputs).length !== 0 && Object.values(this.props.inputs).flat()
+        if (this.props.queryWords) input = input.concat(this.props.queryWords)
         let debateItems = this.props.outputs && this.props.outputs.map((output, i) => 
             <DebateItem
                 title = {output.title}
@@ -15,6 +40,10 @@ class OutputWrapper extends React.Component {
                 results = {output.results}
                 key={i}
                 inputs={input}
+                candidates={output.candidates}
+                isPolling={output.is_polling}
+                handleModalOpen={this.handleModalOpen}
+                index={i}
             >
             </DebateItem>
         )
@@ -22,12 +51,13 @@ class OutputWrapper extends React.Component {
         if (!this.props.loading && !this.props.outputs) {
             debateItems = <div className="no-results">{'No results'}</div>
         }
-
-        let animeProps = {
-            opacity: [0,1],
-            translateY: [-64,0], 
-            delay: (el,i) => i*200
+        let anime;
+        if (this.state.animeProps) {
+            anime = <Anime {...this.state.animeProps}>{debateItems}</Anime>
+        } else {
+            anime = debateItems
         }
+        
         return (
             <div className="output-wrapper">
                 {this.props.loading &&  <LoadingSpinner/> }
@@ -40,13 +70,13 @@ class OutputWrapper extends React.Component {
 
 function LoadingSpinner(props) {
     return (
-        <div class="sk-chase">
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div>
+        <div className="sk-chase">
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
+            <div className="sk-chase-dot"></div>
         </div>
     )
 }

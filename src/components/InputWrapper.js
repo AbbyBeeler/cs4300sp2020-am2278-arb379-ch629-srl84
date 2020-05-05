@@ -1,6 +1,5 @@
 import React from 'react';
 import InputForm from './InputForm';
-import InputItems from './InputItems';
 import './InputWrapper.css';
 
 class InputWrapper extends React.Component {
@@ -12,47 +11,13 @@ class InputWrapper extends React.Component {
             debates: [], 
             errorOn: false
         }
-        this.onAddChange = this.onAddChange.bind(this);
-        this.removeItem = this.removeItem.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
-    removeItem(item) {
+    onSubmit(topics, candidates, debates) {
         this.setState({
-            topics: this.state.topics.filter(el => el !== item),
-            candidates: this.state.candidates.filter(el => el !== item),
-            debates: this.state.debates.filter(el => el !== item)
-        }, () => {
-            if (this.state.topics.length) {
-                this.setState({
-                    errorOn: false
-                })
-                this.props.onInputChange(
-                    { 
-                        topics: this.state.topics, 
-                        candidates: this.state.candidates, 
-                        debates: this.state.debates
-                    }
-                )
-            }
-            else {
-                this.setState({
-                    errorOn: true
-                })
-                this.props.onClear()
-            }
-        })
-        
-    }
-    onAddChange(topicValue, candidateValue, debateValue) {
-        const {topics, candidates, debates} = this.state
-
-        const newTopics = topicValue === '' ? '' : topicValue.split(',')
-        const newCandidates = candidateValue === '' ? '' :candidateValue.split(',')
-        const newDebates = debateValue === '' ? '' : debateValue.split(',')
-
-        this.setState({
-            topics: [...new Set([...topics, ...newTopics])],
-            candidates: [...new Set([...candidates, ...newCandidates])], 
-            debates: [...new Set([...debates, ...newDebates])]
+            topics: topics,
+            candidates: candidates, 
+            debates: debates
         }, () => {
             if (this.state.topics.length) {
                 this.setState({
@@ -77,13 +42,13 @@ class InputWrapper extends React.Component {
     render(){
         return(
             <div>
-            <InputForm onAddChange={this.onAddChange}></InputForm>
-            <InputItems 
+            <InputForm 
                 topics={this.state.topics} 
                 candidates={this.state.candidates}
                 debates={this.state.debates}
-                removeItem={this.removeItem}
-                ></InputItems>
+                onSubmit={this.onSubmit}>
+
+            </InputForm>
             <ErrorMessage errorOn={this.state.errorOn}></ErrorMessage>
         </div>
         )

@@ -9,22 +9,29 @@ class DebateItem extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            openItem: false
+            openItem: false, 
+            openModal: false
         }
         this.handleClick = this.handleClick.bind(this)
+        this.handleModalOpen = this.handleModalOpen.bind(this)
     }
     handleClick() {
         this.setState({
             openItem: !this.state.openItem
         })
     }
+    handleModalOpen() {
+        this.props.handleModalOpen(this.props.index)
+    }
     render() {
-        const { title, date, description, results } = this.props;
-        const resultItems = results.map((result) =>
+        const { title, date, description, results, inputs, candidates, isPolling } = this.props;
+        const resultItems = results.map((result,i) =>
             <ResultItem 
                 video={result.video}
                 quotes={result.quotes}
-                inputs={this.props.inputs}
+                inputs={inputs}
+                candidates={candidates}
+                key={i}
             ></ResultItem>
         )
         const degrees = this.state.openItem ? 90 : 0
@@ -38,15 +45,19 @@ class DebateItem extends React.Component {
         return (
             <div className = "debate-item-wrapper">
                 <div>
-                    <div className="debate-title-wrapper" onClick={this.handleClick}>
-                        <div className="debate-title" >{title}</div>
-                        <Anime {...animePropsIcon}>
-                            <FontAwesomeIcon icon={faChevronRight} />
-                        </Anime>
+                    <div className="debate-title-wrapper" >
+                        <div className="debate-beg">
+                            <div className="debate-title" onClick={this.handleClick} >{title}</div>
+                            <Anime {...animePropsIcon}>
+                                <FontAwesomeIcon icon={faChevronRight} />
+                            </Anime>
+                        </div>
+                        {isPolling && <div className="debate-polling" onClick = {this.handleModalOpen}>Polling Data</div> }
                     </div>
                     <div className="debate-date">{date}</div>
                     
                 </div>
+                
                 {this.state.openItem && 
                     <div>
                         <div className="debate-description">{description}</div>
@@ -58,6 +69,8 @@ class DebateItem extends React.Component {
         )
     }
 }
+
+
 
 
 export default DebateItem;

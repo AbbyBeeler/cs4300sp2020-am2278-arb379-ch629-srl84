@@ -11,7 +11,6 @@ class Config(object):
 
   MONGO_URI = 'mongodb://heroku_64g4q22c:fd0pjea0drkj8qd7k4k94slbne@ds337418.mlab.com:37418/heroku_64g4q22c?retryWrites=false'
   MONGO_DBNAME = 'heroku_64g4q22c'
-  MONGO_DBCOLLECTION = 'debates'
 
 class ProductionConfig(Config):
   DEBUG = False

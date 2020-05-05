@@ -1,5 +1,3 @@
 # Import the db object from main app module
-from app import debates_table
-
 # For handling dates
-import datetime
+from app import db, term_dictionary

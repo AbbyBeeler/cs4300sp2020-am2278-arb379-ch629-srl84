@@ -1,5 +1,7 @@
 from app import app, socketio
+
 import os
+import spacy
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

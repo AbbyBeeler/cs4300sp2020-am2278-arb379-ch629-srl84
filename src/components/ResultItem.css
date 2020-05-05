@@ -1,6 +1,12 @@
-.quote-wrapper:hover {
+.quote-text:hover {
     color: grey;
     cursor: pointer;
+}
+
+.quote-wrapper {
+    width: 800px;
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .video-wrapper {
@@ -14,3 +20,45 @@
     background-color: yellow;
 }
 
+.candidate-info img {
+    height: 50px; 
+    width: 50px;
+    
+}
+
+.candidate-info {
+    display: flex; 
+    flex-direction: column;
+    padding-top: 20px;
+    padding-right: 10px;
+    width: 80px;
+}
+
+.candidate-speaker {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    padding-top: 5px;
+    margin-bottom: -5px;
+}
+
+.quote {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+}
+
+.candidate-polling {
+    display: flex; 
+    flex-direction: row;
+    align-items: center;
+}
+
+.candidate-percent {
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.result-item {
+    margin-bottom: 30px;
+}
