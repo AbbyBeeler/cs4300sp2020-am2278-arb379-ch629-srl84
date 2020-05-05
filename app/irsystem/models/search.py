@@ -33,10 +33,8 @@ def get_exchange(i, transcript, added, result, topic, topic_expansion):
         return result[i]
 
 
-def exact_search(transcript, topic, candidates, topic_expansion):
+def exact_search(added, result, transcript, topic, candidates, topic_expansion):
     topic = topic.lower()
-    added = set()
-    result = dict()
     for i, quote in enumerate(transcript):
         if i not in added and topic in quote['text'].lower() and (quote['speaker'] in candidates or len(candidates) == 0):
             # if in questions, then add question and all responses
@@ -82,7 +80,7 @@ def exact_search(transcript, topic, candidates, topic_expansion):
                 added.add(i)
                 score = transcript[i]['text'].count(topic) + sum(transcript[i]['text'].count(t)/2 for t in topic_expansion)
                 result[i] = ([transcript[i]], score)
-    return result.values()
+    return added, result
 
 
 def query_expansion(topics): 
@@ -209,10 +207,13 @@ def search(topics, candidates, debate_filters, exact):
 
 def search_debate(debate, topics, candidates, topic_expansion):
     relevant = []
-    for topic in topics:
-        for part in debate['parts']:
-            for x, score in exact_search(part['text'], topic, candidates, topic_expansion):
-                relevant.append((part['video'], x, score))
+    for part in debate['parts']:
+        added = set()
+        result = dict()
+        for topic in topics:
+            added, result = exact_search(added, result, part['text'], topic, candidates, topic_expansion)
+        for x, score in result.values():
+            relevant.append((part['video'], x, score))
 
     if relevant:
         relevant_transformed = []
