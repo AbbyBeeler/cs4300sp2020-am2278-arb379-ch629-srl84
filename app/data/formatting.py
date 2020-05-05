@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from bson import json_util
 from config import basedir
@@ -7,7 +8,6 @@ from datetime import datetime
 
 
 IRRELEVANT_TEXT_BLOCK = 50
-IMPORTANT_TEXT_BLOCK = 150
 
 
 # dictionaries mapping partial names to the full names and reverse
@@ -41,11 +41,25 @@ def fix_addressing(debate, parts_to_name):
                 for name_part in line['speaker'].lower().split(' '):
                     if name_part in parts_to_name:
                         line['speaker'] = parts_to_name[name_part]
+                        name = True
                         break
+
                 # if name can't be matched, must be done manually
-                if line['speaker'] is None:
+                if name is None:
                     raise Exception('Debate ' + debate['url'] + '\nName ' + line['speaker'] + ' cannot be matched')
     return parts_to_name, debate
+
+
+# remove only inaudible sections
+def remove_inaudibles(debate):
+    for i in range(len(debate['parts'])):
+        new_text = []
+        for line in debate['parts'][i]['text']:
+            if re.fullmatch(r'\[inaudible( [0-9]{2}:[0-9]{2}:[0-9]{2})?\](.)?', line['text']) is None:
+                new_text.append(line)
+            else:
+                print('Debate ' + debate['url'] + '\nRemoving line ' + line['text'])
+        debate['parts'][i]['text'] = new_text
 
 
 # add whether they are questions
@@ -53,47 +67,16 @@ def annotate_questions(debate):
     other_speakers = set(debate['other_speakers'])
     for part in debate['parts']:
         for i, line in enumerate(part['text']):
-            # if not a candidate and has question mark or is long
-            line['question'] = line['speaker'] in other_speakers and ('?' in line['text'] or len(line['text']) > IMPORTANT_TEXT_BLOCK)
-
-
-# combining same speaker blocks together
-def combine_speakers(debate):
-    for i, part in enumerate(debate['parts']):
-        # checks previous speaker, so initialize the list with fake one
-        new_transcript = [{'speaker': None}]
-        for line in part['text']:
-            # if matches previous quote, combine
-            if line['speaker'] == new_transcript[-1]['speaker']:
-                new_transcript[-1]['text'] += ' ' + line['text']
-            else:
-                new_transcript.append(line)
-        debate['parts'][i]['text'] = new_transcript[1:]
-
-
-# combine candidates' responses when they are cutoff but keep talking
-def combine_speakers_interrupting(debate):
-    candidates = set(debate['candidates'])
-    for i, part in enumerate(debate['parts']):
-        # checks previous two speakers, so initialize the list with fake ones
-        new_transcript = [{'speaker': None}, {'speaker': None}]
-        for line in part['text']:
-            prev_quote = new_transcript[-1]
-            prev_prev_quote = new_transcript[-2]
-
-            # candidate continuing to speak
-            a = line['speaker'] == prev_prev_quote['speaker'] and line['speaker'] in candidates and len(prev_prev_quote['text']) > IMPORTANT_TEXT_BLOCK
-            # wouldn't delete anything important
-            b = a and not prev_quote['question'] and len(prev_quote['text']) < IRRELEVANT_TEXT_BLOCK
-            if b:
-                # delete previous speaker
-                new_transcript.pop()
-                # combine with 2 speakers back
-                prev_prev_quote['text'] += ' ' + line['text']
-                prev_prev_quote['question'] = prev_prev_quote['question'] or line['question']
-            else:
-                new_transcript.append(line)
-        debate['parts'][i]['text'] = new_transcript[2:]
+            # if not a candidate and has question mark
+            line['question'] = line['speaker'] in other_speakers and '?' in line['text']
+            if line['speaker'] in other_speakers and not line['question']:
+                # special cases
+                if i + 1 < len(part['text']) and len(line['text']) > IRRELEVANT_TEXT_BLOCK and part['text'][i+1]['speaker'] not in other_speakers:
+                    # if candidate responded, probably a question
+                    line['question'] = True
+                    if i > 0 and part['text'][i-1]['question']:
+                        # except not if previous response was a question
+                        line['question'] = False
 
 
 # link questions and responses together
@@ -103,35 +86,41 @@ def annotate_responses(debate):
     for part in debate['parts']:
         for i, line in enumerate(part['text']):
             if i == 0 and line['speaker'] in candidates and not line['question']:
-                raise Exception('Debate ' + debate['url'] + '\nText has no response: ' + line['text'])
+                line['response'] = None
+                print('Debate ' + debate['url'] + '\nCandidate quote is first: ' + line['text'])
             else:
-                prev_quote = part['text'][i-1]
                 # if candidate, need to find what quote responding to
                 if line['speaker'] in candidates and not line['question']:
-                    # if responding to another candidate
-                    if prev_quote['speaker'] in candidates and len(prev_quote['text']) > IRRELEVANT_TEXT_BLOCK:
-                        line['response'] = i-1
-                    # TODO: more advanced response to another candidate
-                    # elif part['text'][i-2]['speaker'] in candidates and [x for x in name_to_parts[line['speaker']] if x in part['text'][i-2]['text'].lower()]:
+                    # for speeches and such
+                    if not other_speakers:
+                        line['response'] = None
                     else:
-                        # otherwise find the last question asked
-                        for x in range(i-1, -1, -1):
-                            if part['text'][x]['question']:
-                                line['response'] = x
-                                part['text'][x]['response'].append(i)
-                                break
+                        prev_quote = part['text'][i-1]
+                        # if responding to another candidate
+                        if prev_quote['speaker'] in candidates and prev_quote['speaker'] != line['speaker'] and len(prev_quote['text']) > IRRELEVANT_TEXT_BLOCK:
+                            line['response'] = i-1
+                        # TODO: more advanced response to another candidate
+                        # elif part['text'][i-2]['speaker'] in candidates and [x for x in name_to_parts[line['speaker']] if x in part['text'][i-2]['text'].lower()]:
+                        else:
+                            # otherwise find the last question asked
+                            for x in range(i-1, -1, -1):
+                                if part['text'][x]['question']:
+                                    line['response'] = x
+                                    part['text'][x]['response'].append(i)
+                                    break
 
-                    # if couldn't identify response, find the last other speaker
-                    if 'response' not in line:
-                        for x in range(i-1, -1, -1):
-                            if part['text'][x]['speaker'] in other_speakers:
-                                line['response'] = x
-                                part['text'][x]['response'].append(i)
-                                break
+                        # if couldn't identify response, find the last other speaker
+                        if 'response' not in line:
+                            for x in range(i-1, -1, -1):
+                                if part['text'][x]['speaker'] in other_speakers:
+                                    line['response'] = x
+                                    part['text'][x]['response'].append(i)
+                                    break
 
-                    # if really can't match
-                    if 'response' not in line:
-                        raise Exception('Debate ' + debate['url'] + '\nText has no response: ' + line['text'])
+                        # if really can't match
+                        if 'response' not in line:
+                            line['response'] = None
+                            print('Debate ' + debate['url'] + '\nText has no response: ' + line['text'])
                 else:
                     # initialize list of responses to be filled in
                     line['response'] = []
@@ -143,9 +132,8 @@ def format_and_annotate(debate):
 
     dict_parts_to_name, dict_name_to_parts = generate_speakers_dict(debate)
     fix_addressing(debate, dict_parts_to_name)
-    combine_speakers(debate)
-    annotate_questions(debate)  # needs length of response
-    combine_speakers_interrupting(debate)  # needs whether it's a question
+    remove_inaudibles(debate)
+    annotate_questions(debate)
     annotate_responses(debate)
 
 
