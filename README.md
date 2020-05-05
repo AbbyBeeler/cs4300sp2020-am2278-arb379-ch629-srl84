@@ -4,6 +4,9 @@
 
 1. Build
 ```bash
+source venv/bin/activate
+source .env
+
 npm run build
 python app.py
 ```
