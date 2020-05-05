@@ -1,5 +1,6 @@
 import React from 'react'
 import Chart from 'chart.js'
+import 'chartjs-plugin-annotation'
 let myLineChart;
 
 let colors  = ["#29335C", "#DB2B39", "#F3A712", "#065931", "#660068", "#DDC700", "#5569BC", "#FF7883", "#F2CA7B", "#19C472", "#E282E4", "#E282E4"];
@@ -19,16 +20,14 @@ class PollingChart extends React.Component {
         
         const {candidates, title} = this.props
         if (typeof myLineChart !== "undefined") myLineChart.destroy();
-        let x_labels;
+        let x_data;
         const dataSets = candidates && candidates.map((el,i)=> {
-            x_labels = el.polls.map(poll => {
-                let date = new Date(poll.date)
-                return `${months[date.getMonth()]}-${date.getDate()}-${date.getFullYear()}`
-            })
-            const y_points = el.polls.map(poll=>poll.pct)
+            let dataPoints = el.polls.map(poll => poll.pct)
+            x_data = el.polls.map(poll=>new Date(poll.date).getTime())
             return {
                 label: el.name, 
-                data: y_points, 
+                type: 'line',
+                data: dataPoints,
                 pointRadius: 3,
                 pointHoverRadius: 5,
                 borderColor: colors[i], 
@@ -40,12 +39,23 @@ class PollingChart extends React.Component {
             } 
         })
 
+        let needle = new Date(this.props.date).getTime()
+        const closest = x_data && x_data.reduce((a, b) => {
+            return Math.abs(b - needle) < Math.abs(a - needle) ? b : a;
+        });
+
+        let addValue = 0; 
+
+        if (needle > closest) addValue = addValue+0.5
+        if (needle < closest) addValue = addValue-0.5
+
+
 
         myLineChart = new Chart(myChartRef, {
             type: "line",
             data: {
-                datasets: dataSets ? dataSets : [], 
-                labels: x_labels
+                datasets: dataSets ? dataSets : [],
+                labels: x_data
             },
             options: {
                 responsive: true,
@@ -68,7 +78,7 @@ class PollingChart extends React.Component {
                     }
                 }, 
                 tooltips: {
-                    titleFontSize: 12, 
+                    titleFontSize: 0, 
                     titleFontStyle: 'normal', 
                     titleFontFamily: 'Hind', 
                     titleMarginBottom: 12,
@@ -80,6 +90,26 @@ class PollingChart extends React.Component {
                     bodyFontColor: 'black',
                     mode: 'index',
                     axis: 'y'
+                },
+                annotation: {
+                    annotations: [
+                      {
+                        drawTime: "afterDatasetsDraw",
+                        id: "vline",
+                        scaleID: "x-axis-0",
+                        type: "line",
+                        mode: "vertical",
+                        value: x_data && x_data.indexOf(closest) + addValue,
+                        borderColor: "black",
+                        borderWidth: 4,
+                        position: "top",
+                        label: {
+                          backgroundColor: "#4a4a4a",
+                          content: "Debate",
+                          enabled: true
+                        }
+                      }
+                    ]
                 },
                 title: {
                     display: true,
@@ -100,9 +130,18 @@ class PollingChart extends React.Component {
                             // Include a dollar sign in the ticks
                             callback: function(value, index, values) {
                                 return value + '%';
-                            }
+                            }, 
+                            min: 0
                         }
                         
+                    }], 
+                    xAxes: [{
+                        ticks: {
+                            callback: (utc) => {
+                                let date = new Date(utc)
+                                return `${months[date.getMonth()]}-${date.getDate()}-${date.getFullYear()}`;
+                            }
+                          }
                     }]
                 }
 

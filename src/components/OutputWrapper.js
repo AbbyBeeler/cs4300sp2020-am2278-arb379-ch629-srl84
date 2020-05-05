@@ -30,8 +30,8 @@ class OutputWrapper extends React.Component {
         }
     }
     render() {
-        let input = Object.keys(this.props.inputs).length !== 0 && Object.values(this.props.inputs).flat()
-        if (this.props.queryWords) input = input.concat(this.props.queryWords)
+        let input = Object.keys(this.props.inputs).length !== 0 && this.props.inputs.topics
+        if (this.props.queryWords) input = [...new Set(input.concat(this.props.queryWords))]
         let debateItems = this.props.outputs && this.props.outputs.map((output, i) => 
             <DebateItem
                 title = {output.title}
