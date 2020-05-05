@@ -18,7 +18,6 @@ class OutputWrapper extends React.Component {
             this.setState({
                 animeProps: undefined
             })
-            console.log('false to false')
         } else if (prevProps.loading === false && this.props.loading === true){
             this.setState({
                 animeProps: {
@@ -28,7 +27,6 @@ class OutputWrapper extends React.Component {
                 }
             })
 
-            console.log('false to true')
         }
     }
     render() {
