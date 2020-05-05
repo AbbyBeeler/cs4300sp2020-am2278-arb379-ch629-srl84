@@ -152,14 +152,15 @@ def search(topics, candidates, debate_filters, exact):
     topic_expansion = query_expansion(topics)
     if not exact: 
         topics.extend(topic_expansion)
+        topic_expansion = []
 
     # OR all of the candidates
-    # TODO: remove debate filter
-    debate_query = {'tags': 'debate'}
-    if len(candidates) == 1:
-        debate_query['candidates'] = candidates[0]
-    elif len(candidates) > 1:
-        debate_query['$or'] = [{'candidates': candidate} for candidate in candidates]
+    if len(candidates) == 0:
+        debate_query = {'tags': 'debate'}
+    elif len(candidates) == 1:
+        debate_query = {'candidates': candidates[0]}
+    else:
+        debate_query = {'$or': [{'candidates': candidate} for candidate in candidates]}
 
     # AND all words in a debate filter, OR the filters
     debates = list(db.debates.find(debate_query))
@@ -203,12 +204,10 @@ def search(topics, candidates, debate_filters, exact):
     for debate in results:
         debate['date'] = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
 
-    return results, topic_expansion
+    return results, topics
 
 
 def search_debate(debate, topics, candidates, topic_expansion):
-        
-    
     relevant = []
     for topic in topics:
         for part in debate['parts']:

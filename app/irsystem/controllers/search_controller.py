@@ -11,8 +11,8 @@ def debates():
     candidates = data['candidates']
     debate_filters = data['debates']
 
-    results, topic_expansion = search(topics, candidates, debate_filters, False)
-    return {'results': results, 'query': topic_expansion}
+    results, topics = search(topics, candidates, debate_filters, False)
+    return {'results': results, 'query': topics}
 
 @irsystem.route('/exactsearch', methods=['POST'])
 def esearch():
@@ -22,8 +22,8 @@ def esearch():
     candidates = data['candidates']
     debate_filters = data['debates']
 
-    results, topic_expansion = search(topics, candidates, debate_filters, True)
-    return {'results': results, 'query': topic_expansion}
+    results, topics = search(topics, candidates, debate_filters, True)
+    return {'results': results, 'query': topics}
 
 
 @irsystem.route('/candidates', methods=['GET'])
