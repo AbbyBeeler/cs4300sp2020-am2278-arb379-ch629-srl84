@@ -105,7 +105,7 @@ class App extends React.Component {
       <h1 className="app-title">Shortened Debates.</h1>
       <p className="app-description">watch the important moments on the issues you care most about.</p>
       <InputWrapper onInputChange={this.sendInputInformation} onClear={this.onClear}/>
-      {queryWords && (queryWords.length !==0) && <QueryExpansion enable={enableQueryExpansion} handleEnable = {this.handleEnable} query={queryWords}/>}
+      {queryWords && (queryWords.length !==0) && <QueryExpansion loading={this.state.loading} enable={enableQueryExpansion} handleEnable = {this.handleEnable} query={queryWords}/>}
       <OutputWrapper queryWords={ enableQueryExpansion ? queryWords : undefined} handleAnimate = {this.handleAnimate} handleModalOpen={this.handleModalOpen} inputs={this.state.input} loading={this.state.loading} outputs={this.state.output} animateOnce={this.state.animateOnce}></OutputWrapper>
       <Modal candidates={modalIndex>=0 && output[modalIndex].candidates} title={modalIndex>=0 && output[modalIndex].title} date={modalIndex>=0 && output[modalIndex].date} closeItem={this.handleModalClose} open={this.state.openModal} />
     </div>
@@ -161,8 +161,8 @@ class QueryExpansion extends React.Component {
 
     return(
       <div className="query-expansion">
-        <div>{messageText + text}</div>
         <div className="query-button" onClick = {this.handleClick}>{buttonText}</div>
+        <div>{!this.props.loading && messageText + text}</div>
       </div>
     )
   }
