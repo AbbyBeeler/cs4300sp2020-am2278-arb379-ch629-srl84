@@ -69,7 +69,8 @@ class App extends React.Component {
   onClear() {
     this.setState({
       output: [], 
-      loading: false
+      loading: false, 
+      queryWords: undefined
     })
   }
   handleModalOpen(index) {
