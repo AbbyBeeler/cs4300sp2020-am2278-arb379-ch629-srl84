@@ -155,7 +155,7 @@ class QueryExpansion extends React.Component {
   render() {
     const text = this.props.query.join(', ')
 
-    const messageText = this.props.enable ? 'Showing results for related terms: ' : 'Related terms: '
+    const messageText = this.props.enable ? 'Showing results for related terms: ' : 'Showing results for: '
 
     const buttonText = this.props.enable ? 'Disable Query Expansion' : 'Enable Query Expansion'
 

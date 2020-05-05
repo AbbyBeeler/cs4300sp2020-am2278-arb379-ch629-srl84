@@ -29,8 +29,8 @@ class PollingChart extends React.Component {
             return {
                 label: el.name, 
                 data: y_points, 
-                pointRadius: 2,
-                pointHoverRadius: 3,
+                pointRadius: 3,
+                pointHoverRadius: 5,
                 borderColor: colors[i], 
                 fill: false, 
                 borderWidth: 2, 
