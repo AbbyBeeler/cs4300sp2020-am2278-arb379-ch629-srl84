@@ -28,7 +28,7 @@ class App extends React.Component {
   sendInputInformation(newInput) {
     this.setState({
       input: newInput, 
-      loading: true
+      loading: true,
     }, ()=>{
       let endpoint; 
       if (this.state.enableQueryExpansion) endpoint = '/search'
@@ -44,7 +44,8 @@ class App extends React.Component {
         console.log(data)
         if (!this.state.loading) {
           this.setState({
-            output: []
+            output: [], 
+            queryWords: undefined
           })
         }
         else if (data['results'].length === 0) {
@@ -91,8 +92,7 @@ class App extends React.Component {
   }
   handleEnable() {
     this.setState({
-      enableQueryExpansion: !this.state.enableQueryExpansion, 
-      queryWords: undefined
+      enableQueryExpansion: !this.state.enableQueryExpansion
     }, () => {
       this.sendInputInformation(this.state.input)
     })
@@ -105,7 +105,7 @@ class App extends React.Component {
       <h1 className="app-title">Shortened Debates.</h1>
       <p className="app-description">watch the important moments on the issues you care most about.</p>
       <InputWrapper onInputChange={this.sendInputInformation} onClear={this.onClear}/>
-      {queryWords && queryWords.length && <QueryExpansion enable={enableQueryExpansion} handleEnable = {this.handleEnable} query={queryWords}/>}
+      {queryWords && (queryWords.length !==0) && <QueryExpansion enable={enableQueryExpansion} handleEnable = {this.handleEnable} query={queryWords}/>}
       <OutputWrapper queryWords={queryWords} handleAnimate = {this.handleAnimate} handleModalOpen={this.handleModalOpen} inputs={this.state.input} loading={this.state.loading} outputs={this.state.output} animateOnce={this.state.animateOnce}></OutputWrapper>
       <Modal candidates={modalIndex>=0 && output[modalIndex].candidates} title={modalIndex>=0 && output[modalIndex].title} date={modalIndex>=0 && output[modalIndex].date} closeItem={this.handleModalClose} open={this.state.openModal} />
     </div>
@@ -153,7 +153,7 @@ class QueryExpansion extends React.Component {
     this.props.handleEnable();
   }
   render() {
-    const text =  this.props.query.reduce((acc, curVal)=> acc + ' ' + curVal + ',')
+    const text =  this.props.query.reduce((acc, curVal)=>  curVal + ', ' + acc)
 
     const messageText = this.props.enable ? 'Showing results for related terms: ' : 'Related terms: '
 
