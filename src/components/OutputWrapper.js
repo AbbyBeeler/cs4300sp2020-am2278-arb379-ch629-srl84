@@ -7,23 +7,33 @@ class OutputWrapper extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            animeProps: {opacity: [0,1],
-                translateY: [-64,0], 
-                delay: (el,i) => i*200}
+            animeProps: undefined
         }
     }
     handleModalOpen = (index) => {
         this.props.handleModalOpen(index)
     }
     componentDidUpdate(prevProps) {
-        if (prevProps.loading !== this.props.loading) {
+        if (prevProps.loading === false && this.props.loading===false && this.state.animeProps) {
             this.setState({
-                animeProps:{}
+                animeProps: undefined
             })
-        } 
+            console.log('false to false')
+        } else if (prevProps.loading === false && this.props.loading === true){
+            this.setState({
+                animeProps: {
+                    opacity: [0,1],
+                    translateY: [-64,0], 
+                    delay: (el,i) => i*200
+                }
+            })
+
+            console.log('false to true')
+        }
     }
     render() {
-        const input = Object.keys(this.props.inputs).length !== 0 && Object.values(this.props.inputs).flat()
+        let input = Object.keys(this.props.inputs).length !== 0 && Object.values(this.props.inputs).flat()
+        if (this.props.queryWords) input = input.concat(this.props.queryWords)
         let debateItems = this.props.outputs && this.props.outputs.map((output, i) => 
             <DebateItem
                 title = {output.title}
@@ -43,12 +53,17 @@ class OutputWrapper extends React.Component {
         if (!this.props.loading && !this.props.outputs) {
             debateItems = <div className="no-results">{'No results'}</div>
         }
+        let anime;
+        if (this.state.animeProps) {
+            anime = <Anime {...this.state.animeProps}>{debateItems}</Anime>
+        } else {
+            anime = debateItems
+        }
+        
         return (
             <div className="output-wrapper">
                 {this.props.loading &&  <LoadingSpinner/> }
-                { !this.props.loading && <Anime {...this.state.animeProps}>
-                {debateItems}
-        </Anime> }
+                { !this.props.loading && anime }
             </div>
         )
     }
