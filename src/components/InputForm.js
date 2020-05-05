@@ -1,5 +1,4 @@
 import React from 'react';
-import Select from 'react-select'
 import './InputForm.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {  faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
@@ -7,59 +6,30 @@ import {  faPlus, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 const types = ['topic', 'candidate', 'debate']
 const colors = ['#29335C', '#DB2B39', '#F3A712']
 
-const options = [
-    { value: 'blues', label: 'Blues' },
-    { value: 'rock', label: 'Rock' },
-    { value: 'jazz', label: 'Jazz' },
-    { value: 'orchestra', label: 'Orchestra' } 
-  ];
-
 class InputForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-<<<<<<< HEAD
-            topicValue: '', 
-            candidateValue: '', 
-            debateValue: '',
-            candidateOptions: [],
-            debateOptions: []
-=======
             topics: [], 
             candidates: [], 
             debates: [],
             candidateOptions: [],
             debateOptions: [], 
             topicsValue: ''
->>>>>>> 3c780bc2c0a72b720b0c586a0a50797ae5ad9926
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleKeyDown = this.handleKeyDown.bind(this)
         this.removeItem = this.removeItem.bind(this)
         this.handleChange = this.handleChange.bind(this)
     }
-<<<<<<< HEAD
-    componentDidMount() {
         
-        fetch('/candidates', {
-            method: 'post',
-=======
-    
     componentDidMount() {
         fetch('/candidates', {
             method: 'get',
->>>>>>> 3c780bc2c0a72b720b0c586a0a50797ae5ad9926
             headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             }
-<<<<<<< HEAD
-        }).then(res=> res.json).then(res => res.json()).then(data => {
-            console.log(data)})
-    }
-    handleChange(event) {
-        console.log(event)
-=======
         }).then(res=> res.json()).then(data => {
             let candidates = data.candidates
             let debates = data.debates
@@ -68,7 +38,6 @@ class InputForm extends React.Component {
                 debateOptions: debates
             })
         })
->>>>>>> 3c780bc2c0a72b720b0c586a0a50797ae5ad9926
     }
     handleSubmit(event) {
         event.preventDefault();
@@ -109,13 +78,6 @@ class InputForm extends React.Component {
     render() {
         const { debateOptions, candidateOptions, candidates, debates, topics } = this.state
         return (
-<<<<<<< HEAD
-            <div>
-                <form>
-                    <Select onChange={this.handleChange} options={options}/>
-                    <Select/>
-                    <Select/>
-=======
             <div className="input-form-wrapper">
                     <div className="input-info"><InputDropdown placeholder="topics: climate change" removeItem={this.removeItem} type="topics" inputs={topics} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={this.state.topicsValue}/>
                     <div className="info-icon">
@@ -125,17 +87,12 @@ class InputForm extends React.Component {
                         </div>
                     <InputDropdown  placeholder="candidates: Bernie Sanders" removeItem={this.removeItem} type="candidates" options={candidateOptions} inputs={candidates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={''}/>
                     <InputDropdown placeholder="debates: New Hampshire Democratic Debate" removeItem={this.removeItem} type="debates" options={debateOptions} inputs={debates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={''}/>
->>>>>>> 3c780bc2c0a72b720b0c586a0a50797ae5ad9926
                     <input className="button-add" type="button" onClick={this.handleSubmit} value="Search" ></input>
             </div>
         )
     }
 }
 
-<<<<<<< HEAD
-
-
-=======
 class InputDropdown extends React.Component {
     constructor(props) {
         super(props); 
@@ -382,5 +339,4 @@ class InputItem extends React.Component {
     } 
 }
 
->>>>>>> 3c780bc2c0a72b720b0c586a0a50797ae5ad9926
 export default InputForm;

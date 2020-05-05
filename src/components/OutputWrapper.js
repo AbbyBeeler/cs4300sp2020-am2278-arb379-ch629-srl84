@@ -61,8 +61,7 @@ class OutputWrapper extends React.Component {
         return (
             <div className="output-wrapper">
                 {this.props.loading &&  <LoadingSpinner/> }
-                { !this.props.loading && <Anime {...animeProps}>
-                 {debateItems} </Anime>}
+                { !this.props.loading && anime}
             </div>
         )
     }
