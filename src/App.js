@@ -41,7 +41,6 @@ class App extends React.Component {
         },
         body: JSON.stringify(newInput)
       }).then(res => res.json()).then(data => {
-        console.log(data)
         if (!this.state.loading) {
           this.setState({
             output: [], 

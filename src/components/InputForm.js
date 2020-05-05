@@ -14,11 +14,13 @@ class InputForm extends React.Component {
             candidates: [], 
             debates: [],
             candidateOptions: [],
-            debateOptions: []
+            debateOptions: [], 
+            topicsValue: ''
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleKeyDown = this.handleKeyDown.bind(this)
         this.removeItem = this.removeItem.bind(this)
+        this.handleChange = this.handleChange.bind(this)
     }
     
     componentDidMount() {
@@ -40,11 +42,19 @@ class InputForm extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         const {topics, candidates, debates} = this.state
+        if (this.state.topicsValue !== '') {
+            topics.push(this.state.topicsValue)
+            this.setState({
+                topicsValue: ''
+            })
+        }
         this.props.onSubmit(topics, candidates, debates)
+        
     }
     handleKeyDown(msg) {
         this.setState({
-            [msg.type]: [...new Set([...this.state[msg.type], msg.value])]
+            [msg.type]: [...new Set([...this.state[msg.type], msg.value])], 
+            topicsValue: ''
         })
         
     }
@@ -60,18 +70,23 @@ class InputForm extends React.Component {
         })
         
     }
+    handleChange(msg){
+        this.setState({
+            [msg.type]: msg.value
+        })
+    }
     render() {
         const { debateOptions, candidateOptions, candidates, debates, topics } = this.state
         return (
             <div className="input-form-wrapper">
-                    <div className="input-info"><InputDropdown placeholder="topics: climate change" removeItem={this.removeItem} type="topics" inputs={topics} onChange={this.handleChange} handleKeyDown={this.handleKeyDown}/>
+                    <div className="input-info"><InputDropdown placeholder="topics: climate change" removeItem={this.removeItem} type="topics" inputs={topics} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={this.state.topicsValue}/>
                     <div className="info-icon">
                         <FontAwesomeIcon icon={faInfoCircle}/>
                         <span className="info-icon-text">Put in topics you're interested in.<br/> Some examples are: healthcare, terrorism, gun policy, taxes, education, economy, immigration, abortion, climate change, war, coronavirus</span>
                         </div>
                         </div>
-                    <InputDropdown  placeholder="candidates: Bernie Sanders" removeItem={this.removeItem} type="candidates" options={candidateOptions} inputs={candidates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown}/>
-                    <InputDropdown placeholder="debates: New Hampshire Democratic Debate" removeItem={this.removeItem} type="debates" options={debateOptions} inputs={debates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown}/>
+                    <InputDropdown  placeholder="candidates: Bernie Sanders" removeItem={this.removeItem} type="candidates" options={candidateOptions} inputs={candidates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={''}/>
+                    <InputDropdown placeholder="debates: New Hampshire Democratic Debate" removeItem={this.removeItem} type="debates" options={debateOptions} inputs={debates} onChange={this.handleChange} handleKeyDown={this.handleKeyDown} handleChange={this.handleChange} value={''}/>
                     <input className="button-add" type="button" onClick={this.handleSubmit} value="Search" ></input>
             </div>
         )
@@ -98,7 +113,21 @@ class InputDropdown extends React.Component {
         this.handleMouseLeave = this.handleMouseLeave.bind(this)
         this.handleMouseOver = this.handleMouseOver.bind(this)
     }
+    componentDidUpdate(prevProps) {
+        if (prevProps.value !== '' && this.props.value === ''){
+            this.setState({
+                value: ''
+            })
+        }
+    }
     handleChange(event) {
+        if (this.props.type === 'topics') {
+            let msg = {
+                type: this.props.type +'Value', 
+                value: event.target.value
+            }
+            this.props.handleChange(msg)
+        }
         this.setState({
             value: event.target.value
         }, () => {
@@ -237,12 +266,13 @@ class InputDropdown extends React.Component {
             placeholder = ''
         }
 
+
         return (
             <div className="input-dropdown-wrapper">
                             <div className="text-input">
                             {
-                                inputs.map(el=> {
-                                    return <InputItem type={type.slice(0,type.length-1)} itemName = {el} removeItem={this.removeItem}/>
+                                inputs.map((el, i)=> {
+                                    return <InputItem key={i} type={type.slice(0,type.length-1)} itemName = {el} removeItem={this.removeItem}/>
                                 })
                             }
                             <input onFocus={this.handleFocus} onBlur={this.handleBlur} value = {this.state.value} placeholder={placeholder} className="input-candidate" type="text" onChange = {this.handleChange} onKeyDown={this.handleKeyDown} ></input>
@@ -256,7 +286,7 @@ class InputDropdown extends React.Component {
                                     if (this.state.currentKey === i) {
                                         selectedItem = true
                                     }
-                                    return <InputDropdownOption selectedItem={selectedItem} onClick ={(e) => e.stopPropagation()} inputValue={this.state.value} item={el} handleSelect={this.handleSelect} />
+                                    return <InputDropdownOption selectedItem={selectedItem} onClick ={(e) => e.stopPropagation()} inputValue={this.state.value} item={el} handleSelect={this.handleSelect} key={i} />
                                 })
                             }
                         </div>}
