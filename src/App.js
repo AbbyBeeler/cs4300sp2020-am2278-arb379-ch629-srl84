@@ -153,7 +153,7 @@ class QueryExpansion extends React.Component {
     this.props.handleEnable();
   }
   render() {
-    const text =  this.props.query.reduce((acc, curVal)=>  curVal + ', ' + acc)
+    const text = this.props.query.join(', ')
 
     const messageText = this.props.enable ? 'Showing results for related terms: ' : 'Related terms: '
 
