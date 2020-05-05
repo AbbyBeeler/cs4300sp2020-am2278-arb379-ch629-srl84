@@ -4,6 +4,10 @@
     font-family: 'Hind', sans-serif;
 }
 
+a {
+    font-family: 'Hind';
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
 }
@@ -14,7 +18,8 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     justify-content: center;
     text-align: center;
-    margin-top: 100px;
+    
+    position: relative;
 }
 
 .app-title {
@@ -30,6 +35,7 @@ h1, h2, h3, h4, h5, h6 {
 .app-authors {
     font-size: 12px;
     color: grey;
+    margin-top: 100px;
 }
 
 .modal {
@@ -72,4 +78,33 @@ h1, h2, h3, h4, h5, h6 {
   .query-warning {
       color: red;
       font-size: 10px;
+  }
+
+  .prototypes {
+      position: absolute;
+      top: 0;
+      left: 0;
+  }
+  a {
+    font-family: 'Hind';
+    text-decoration: none;
+    font-size: 14px;
+}
+
+a:link {
+    text-decoration: none;
+    color: black
+  }
+  
+  a:visited {
+    text-decoration: none;
+    color: black
+  }
+  
+  a:hover {
+    color: blue;
+  }
+  
+  a:active {
+    color: black;
   }

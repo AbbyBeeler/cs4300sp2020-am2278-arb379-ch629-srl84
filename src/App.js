@@ -102,6 +102,7 @@ class App extends React.Component {
     const {output, modalIndex, queryWords, enableQueryExpansion} = this.state
     return (
     <div className="App">
+      <div className="prototypes"><a href="https://shortened-debates-v1.herokuapp.com/">Prototype 1</a> | <a href="https://shortened-debates-v2.herokuapp.com/">Prototype 2</a></div>
        <p className="app-authors">Samantha Lee (srl84), Cayla Hamann (ch629), Alex Meyer (am2278), Abby Beeler (arb379)</p>
       <h1 className="app-title">Shortened Debates.</h1>
       <p className="app-description">watch the important moments on the issues you care most about.</p>
