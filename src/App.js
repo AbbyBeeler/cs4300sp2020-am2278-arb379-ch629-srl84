@@ -32,7 +32,7 @@ class App extends React.Component {
     }, ()=>{
       let endpoint; 
       if (this.state.enableQueryExpansion) endpoint = '/search'
-      else endpoint = 'exactsearch'
+      else endpoint = '/exactsearch'
       fetch(endpoint, {
         method: 'post',
         headers: {
