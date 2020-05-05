@@ -271,8 +271,8 @@ class InputDropdown extends React.Component {
             <div className="input-dropdown-wrapper">
                             <div className="text-input">
                             {
-                                inputs.map(el=> {
-                                    return <InputItem type={type.slice(0,type.length-1)} itemName = {el} removeItem={this.removeItem}/>
+                                inputs.map((el, i)=> {
+                                    return <InputItem key={i} type={type.slice(0,type.length-1)} itemName = {el} removeItem={this.removeItem}/>
                                 })
                             }
                             <input onFocus={this.handleFocus} onBlur={this.handleBlur} value = {this.state.value} placeholder={placeholder} className="input-candidate" type="text" onChange = {this.handleChange} onKeyDown={this.handleKeyDown} ></input>
@@ -286,7 +286,7 @@ class InputDropdown extends React.Component {
                                     if (this.state.currentKey === i) {
                                         selectedItem = true
                                     }
-                                    return <InputDropdownOption selectedItem={selectedItem} onClick ={(e) => e.stopPropagation()} inputValue={this.state.value} item={el} handleSelect={this.handleSelect} />
+                                    return <InputDropdownOption selectedItem={selectedItem} onClick ={(e) => e.stopPropagation()} inputValue={this.state.value} item={el} handleSelect={this.handleSelect} key={i} />
                                 })
                             }
                         </div>}

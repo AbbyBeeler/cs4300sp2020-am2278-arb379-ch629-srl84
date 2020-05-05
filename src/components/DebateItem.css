@@ -44,8 +44,11 @@
 
 .debate-polling {
     padding-right: 20px;
+    font-weight: bold;
 }
 
 .debate-polling:hover {
-    cursor: pointer
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.411);  
+    
 }
