@@ -4,13 +4,26 @@ import Anime from 'react-anime';
 import './OutputWrapper.css'
 
 class OutputWrapper extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            animeProps: {opacity: [0,1],
+                translateY: [-64,0], 
+                delay: (el,i) => i*200}
+        }
+    }
     handleModalOpen = (index) => {
         this.props.handleModalOpen(index)
     }
+    componentDidUpdate(prevProps) {
+        if (prevProps.loading !== this.props.loading) {
+            this.setState({
+                animeProps:{}
+            })
+        } 
+    }
     render() {
-        console.log(this.props.outputs)
         const input = Object.keys(this.props.inputs).length !== 0 && Object.values(this.props.inputs).flat()
-        const {handleAnimate} = this.props
         let debateItems = this.props.outputs && this.props.outputs.map((output, i) => 
             <DebateItem
                 title = {output.title}
@@ -30,27 +43,10 @@ class OutputWrapper extends React.Component {
         if (!this.props.loading && !this.props.outputs) {
             debateItems = <div className="no-results">{'No results'}</div>
         }
-        let animeProps; 
-        if (this.props.animateOnce) {
-            animeProps = {
-                opacity: [0,1],
-                translateY: [-64,0], 
-                delay: (el,i) => i*200, 
-                complete: function(anim) {
-    
-                    if(anim.completed) {
-                        console.log('complete')
-                        handleAnimate()
-                    }
-                }
-            }
-        } else {
-            animeProps = {}
-        }
         return (
             <div className="output-wrapper">
                 {this.props.loading &&  <LoadingSpinner/> }
-                { !this.props.loading && <Anime {...animeProps}>
+                { !this.props.loading && <Anime {...this.state.animeProps}>
                 {debateItems}
         </Anime> }
             </div>

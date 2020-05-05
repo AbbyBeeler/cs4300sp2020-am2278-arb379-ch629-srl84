@@ -77,7 +77,6 @@ class App extends React.Component {
     })
   }
   handleAnimate() {
-    console.log('setFalse')
     this.setState({
       animateOnce: false
     })
