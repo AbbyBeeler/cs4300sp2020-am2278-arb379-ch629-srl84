@@ -59,7 +59,12 @@ def exact_search(transcript, topic, candidates, topic_expansion):
                 exchange = z
                 exchange.append(quote)
                 score = score + quote['text'].count(topic) + sum(quote['text'].count(t)/2 for t in topic_expansion)
-                result[first_i] =  (exchange, score)
+                result[first_i] = (exchange, score)
+            # if not a response to anything, create new chain
+            elif not quote['question'] and quote['response'] is None:
+                added.add(i)
+                score = transcript[i]['text'].count(topic) + sum(transcript[i]['text'].count(t)/2 for t in topic_expansion)
+                result[i] = ([transcript[i]], score)
     return result.values()
 
 

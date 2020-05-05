@@ -107,8 +107,9 @@ debates_url = 'https://www.rev.com/blog/transcript-category/debate-transcripts'
 debate_urls = get_debates(debates_url)
 election_2020_urls = get_debates(election_2020_url) - debate_urls
 
-bad_debates = {'https://www.rev.com/blog/transcripts/transcript-of-the-kamala-harris-and-joe-biden-heated-exchange', 'https://www.rev.com/blog/transcripts/transcript-from-first-night-of-democratic-debates', 'https://www.rev.com/blog/transcripts/transcript-donna-brazile-tells-ronna-mcdaniel-go-to-hell-on-fox-news', 'https://www.rev.com/blog/transcripts/transcript-joe-biden-mistakenly-says-hes-a-united-states-senate-candidate-in-south-carolina-speech'}
-debate_urls -= bad_debates
+bad = {'https://www.rev.com/blog/transcripts/transcript-of-the-kamala-harris-and-joe-biden-heated-exchange', 'https://www.rev.com/blog/transcripts/transcript-from-first-night-of-democratic-debates', 'https://www.rev.com/blog/transcripts/transcript-donna-brazile-tells-ronna-mcdaniel-go-to-hell-on-fox-news', 'https://www.rev.com/blog/transcripts/transcript-joe-biden-mistakenly-says-hes-a-united-states-senate-candidate-in-south-carolina-speech'}
+debate_urls -= bad
+election_2020_urls -= bad
 
 # for each debate transcript url, get all info and save to a file
 for url in debate_urls:
