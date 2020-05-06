@@ -95,7 +95,9 @@ def query_expansion(topics):
     expansion = []
     for topic in topics:
         tokens = topic.split()
-        for token in tokens: 
+        for token in tokens:
+            if len(tokens) > 1: 
+                expansion.append(token)
             if token in term_dictionary:
                 expansion.extend([term_dictionary[token][i] for i in range(3)])
     return set(expansion)
@@ -155,8 +157,8 @@ def sort_debates(debate, candidates):
 def search(topics, candidates, debate_filters, exact):
     # query: (OR candidates) AND (OR filters in title, tags, and description)
 
-    topic_expansion = query_expansion(topics)
     topics = [topic.lower() for topic in topics]
+    topic_expansion = query_expansion(topics)
     if exact:
         topic_expansion = set()
 
