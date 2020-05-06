@@ -28,8 +28,8 @@ def get_exchange(i, transcript, added, result, topics, topic_expansion):
         return get_exchange(transcript[i]['response'], transcript, added, result, topics, topic_expansion)
     else:
         added.add(i)
-        score = sum(transcript[i]['text'].lower().count(topic)*2 for topic in topics)
-        score += sum(transcript[i]['text'].lower().count(topic)*0.5 for topic in topic_expansion)
+        score = sum(transcript[i]['text'].lower().count(topic.lower())*2 for topic in topics)
+        score += sum(transcript[i]['text'].lower().count(topic.lower())*0.5 for topic in topic_expansion)
         result[i] = ([transcript[i]], score)
         return result[i]
 
@@ -41,8 +41,8 @@ def exact_search(transcript, topics, candidates, topic_expansion):
         if i not in added and (quote['speaker'] in candidates or len(candidates) == 0):
             # if in questions, then add question and all responses
             if quote['question'] and quote['response']:
-                score = sum(quote['text'].lower().count(topic)*2 for topic in topics)
-                score += sum(quote['text'].lower().count(topic)*0.5 for topic in topic_expansion)
+                score = sum(quote['text'].lower().count(topic.lower())*2 for topic in topics)
+                score += sum(quote['text'].lower().count(topic.lower())*0.5 for topic in topic_expansion)
                 if score > 0:
                     exchange = [quote]
                     added.add(i)
@@ -95,9 +95,11 @@ def query_expansion(topics):
     expansion = []
     for topic in topics:
         tokens = topic.split()
-        for token in tokens: 
-            if token in term_dictionary:
-                expansion.extend([term_dictionary[token][i] for i in range(3)])
+        for token in tokens:
+            if len(tokens) > 1: 
+                expansion.append(token.lower())
+            if token.lower() in term_dictionary:
+                expansion.extend([term_dictionary[token.lower()][i] for i in range(3)])
     return set(expansion)
 
 
