@@ -61,8 +61,8 @@ def exact_search(transcript, candidates, topics, topic_expansion, topic_tree):
                 if score > 0:
                     exchange = [quote]
                     for i2, q in enumerate(quote['response']):
-                        # if response is a candidate
-                        if transcript[q]['speaker'] in candidates:
+                        # if no candidate filtering or response is a candidate
+                        if not candidates or transcript[q]['speaker'] in candidates:
                             # if same speaker is continuing
                             if len(exchange) > 1 and transcript[q]['speaker'] == exchange[-1]['speaker']:
                                 # uninterrupted
@@ -80,7 +80,7 @@ def exact_search(transcript, candidates, topics, topic_expansion, topic_tree):
                         added.add(i)
                         result[i] = (exchange, score)
             # otherwise only add question (if not already) and response
-            elif not quote['question'] and type(quote['response']) != list and quote['speaker'] in candidates:
+            elif not quote['question'] and type(quote['response']) != list and (not candidates or quote['speaker'] in candidates):
                 new_score = get_score(quote['text'], topics, topic_expansion, topic_tree)
                 if new_score > 0:
                     added.add(i)
@@ -181,7 +181,6 @@ def search(topics, candidates, debate_filters, exact):
     # OR all of the candidates
     if len(candidates) == 0:
         debate_query = {'tags': 'debate'}
-        candidates = set(get_candidates())
     elif len(candidates) == 1:
         debate_query = {'candidates': candidates[0]}
     else:
