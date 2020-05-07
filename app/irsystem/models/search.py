@@ -5,6 +5,7 @@ import spacy
 from nltk.stem.snowball import SnowballStemmer
 
 from app.irsystem import TYPE_TAGS
+from app.irsystem.models.helpers import get_candidates
 from app.irsystem.models.videos import get_video
 from . import *
 
@@ -49,7 +50,7 @@ def get_exchange(i, transcript, added, result, topics, topic_expansion, topic_tr
         return i, result[i]
 
 
-def exact_search(transcript, topics, topic_expansion, topic_tree):
+def exact_search(transcript, candidates, topics, topic_expansion, topic_tree):
     added = set()
     result = dict()
     for i, quote in enumerate(transcript):
@@ -59,23 +60,27 @@ def exact_search(transcript, topics, topic_expansion, topic_tree):
                 score = get_score(quote['text'], topics, topic_expansion, topic_tree) * 2
                 if score > 0:
                     exchange = [quote]
-                    added.add(i)
                     for i2, q in enumerate(quote['response']):
-                        # if same speaker is continuing
-                        if len(exchange) > 1 and transcript[q]['speaker'] == exchange[-1]['speaker']:
-                            # uninterrupted
-                            if i2 > 0 and transcript[quote['response'][i2-1]]['text'] in exchange[-1]['text']:
-                                exchange[-1]['text'] += ' ' + transcript[q]['text']
-                            # interrupted
+                        # if response is a candidate
+                        if transcript[q]['speaker'] in candidates:
+                            # if same speaker is continuing
+                            if len(exchange) > 1 and transcript[q]['speaker'] == exchange[-1]['speaker']:
+                                # uninterrupted
+                                if i2 > 0 and transcript[quote['response'][i2-1]]['text'] in exchange[-1]['text']:
+                                    exchange[-1]['text'] += ' ' + transcript[q]['text']
+                                # interrupted
+                                else:
+                                    exchange[-1]['text'] += ' ... ' + transcript[q]['text']
                             else:
-                                exchange[-1]['text'] += ' ... ' + transcript[q]['text']
-                        else:
-                            exchange.append(transcript[q])
-                        score += get_score(transcript[q]['text'], topics, topic_expansion, topic_tree)
-                        added.add(q)
-                    result[i] = (exchange, score)
+                                exchange.append(transcript[q])
+                            score += get_score(transcript[q]['text'], topics, topic_expansion, topic_tree)
+                            added.add(q)
+                    # if at least one response is a candidate
+                    if len(exchange) > 1:
+                        added.add(i)
+                        result[i] = (exchange, score)
             # otherwise only add question (if not already) and response
-            elif not quote['question'] and type(quote['response']) != list:
+            elif not quote['question'] and type(quote['response']) != list and quote['speaker'] in candidates:
                 new_score = get_score(quote['text'], topics, topic_expansion, topic_tree)
                 if new_score > 0:
                     added.add(i)
@@ -105,8 +110,8 @@ def query_expansion(topics):
     for topic in topics:
         tokens = topic.split()
         for token in tokens:
-            if len(tokens) > 1: 
-                expansion.append(token)
+            # if len(tokens) > 1:
+            #     expansion.append(token)
             if token in term_dictionary:
                 expansion.extend([term_dictionary[token][i] for i in range(3)])
     return set(expansion)
@@ -172,9 +177,11 @@ def search(topics, candidates, debate_filters, exact):
         topic_expansion = set()
     topic_tree = {topic: [te for te in topic_expansion if te in topic] for topic in topics}
 
+    candidates = set(candidates)
     # OR all of the candidates
     if len(candidates) == 0:
         debate_query = {'tags': 'debate'}
+        candidates = set(get_candidates())
     elif len(candidates) == 1:
         debate_query = {'candidates': candidates[0]}
     else:
@@ -206,7 +213,7 @@ def search(topics, candidates, debate_filters, exact):
 
     results = []
     for debate in filtered_debates:
-        result = search_debate(debate, topics, topic_expansion, topic_tree)
+        result = search_debate(debate, candidates, topics, topic_expansion, topic_tree)
         if result is not None:
             election = next(x for x in debate['tags'] if x not in TYPE_TAGS)
             result['candidates'] = [get_candidate_info(x, election, debate['date']) for x in debate['candidates']]
@@ -215,7 +222,6 @@ def search(topics, candidates, debate_filters, exact):
             result['is_polling'] = True if sum([len(x['polls']) for x in result['candidates']]) else False
 
     # order the debates
-    candidates = set(candidates)
     results.sort(key=lambda x: sort_debates(x, candidates), reverse=True)
 
     # make dates pretty
@@ -225,11 +231,11 @@ def search(topics, candidates, debate_filters, exact):
     return results, topics + list(topic_expansion)
 
 
-def search_debate(debate, topics, topic_expansion, topic_tree):
+def search_debate(debate, candidates, topics, topic_expansion, topic_tree):
     relevant = []
 
     for part in debate['parts']:
-        for x, score in exact_search(part['text'], topics, topic_expansion, topic_tree):
+        for x, score in exact_search(part['text'], candidates, topics, topic_expansion, topic_tree):
             relevant.append((part['video'], x, score))
 
     if relevant:
