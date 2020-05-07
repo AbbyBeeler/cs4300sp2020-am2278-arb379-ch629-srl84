@@ -23,9 +23,10 @@ def get_score(text, topics, topic_expansion, topic_tree):
     score_te = {topic: text.lower().count(topic) for topic in topic_expansion}
 
     # some topic expansions are in topics so don't double count those
-    for t, tree in topic_tree.items():
-        for te in tree:
-            score_te[te] -= score_t[t]
+    if topic_expansion:
+        for t, tree in topic_tree.items():
+            for te in tree:
+                score_te[te] -= score_t[t]
 
     # score = sum(text.lower().count(topic) for topic in topics)
     # score += sum(text.lower().count(topic) for topic in topic_expansion) / 2
@@ -167,9 +168,9 @@ def search(topics, candidates, debate_filters, exact):
 
     topics = [topic.lower() for topic in topics]
     topic_expansion = query_expansion(topics)
-    topic_tree = {topic: [te for te in topic_expansion if te in topic] for topic in topics}
     if exact:
         topic_expansion = set()
+    topic_tree = {topic: [te for te in topic_expansion if te in topic] for topic in topics}
 
     # OR all of the candidates
     if len(candidates) == 0:
