@@ -2,21 +2,16 @@ from datetime import datetime, timedelta
 
 import pymongo
 import spacy
+from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import SnowballStemmer
 
 from app.irsystem import TYPE_TAGS
-from app.irsystem.models.helpers import get_candidates
 from app.irsystem.models.videos import get_video
 from . import *
 
-# test topics
-# 'healthcare', 'terrorism', 'national security', 'gun policy', 'taxes',
-# 'education', 'economy', 'immigration', 'abortion', 'federal deficit',
-# 'climate change', 'environment', 'war', 'corona virus', 'covid 19'
-
-
 nlp = spacy.load('en_core_web_sm')
 stemmer = SnowballStemmer('english')
+lemmatizer = WordNetLemmatizer()
 
 
 def get_score(text, topics, topic_expansion, topic_tree):
@@ -114,13 +109,18 @@ def query_expansion(topics):
             #     expansion.append(token)
             if token in term_dictionary:
                 expansion.extend([term_dictionary[token][i] for i in range(3)])
-    return set(expansion)
+    return set(lemmatize(topic) for topic in expansion)
 
 
-# tokenize, lemmatize, lowercase, and filter out stop words and punctuation
-def tokenize(text):
-    tokens = {stemmer.stem(token.text.lower()) for token in nlp(text) if not (token.is_punct or token.is_space or token.is_stop)}
+# tokenize, stem, lowercase, and filter out stop words and punctuation
+def stem(text):
+    tokens = {stemmer.stem(token.lower_) for token in nlp(text) if not (token.is_punct or token.is_space or token.is_stop)}
     return tokens
+
+
+# lemmatize and lowercase
+def lemmatize(text):
+    return lemmatizer.lemmatize(text.lower())
 
 
 def get_candidate_info(candidate_name, election, date):
@@ -158,16 +158,12 @@ def get_candidate_info(candidate_name, election, date):
 
 def polling_change(debate, candidates):
     if len(candidates) == 0:
-        max_poll = max(0 if x['pct_change'] is None else abs(x['pct_change']) for x in debate['candidates'])
+        return max(0 if x['pct_change'] is None else abs(x['pct_change']) for x in debate['candidates'])
     else:
         max_poll = 0
         for x in debate['candidates']:
             if x['name'] in candidates and x['pct_change'] is not None:
                 max_poll = max(max_poll, abs(x['pct_change']))
-
-    if max_poll == 0:
-        return 1
-    else:
         return max_poll
 
 
@@ -186,17 +182,19 @@ def sort_debates(debate, candidates, max_change, max_score):
     debate_score = score_debate(debate) / max_score * 2
     polling_score = polling_change(debate, candidates) / max_change * 1
 
-    print((debate['title'], debate_score, polling_score))
     return response_candidates, (debate_score + polling_score)
 
 
 def search(topics, candidates, debate_filters, exact):
     # query: (OR candidates) AND (OR filters in title, tags, and description)
 
-    topics = [topic.lower() for topic in topics]
+    topics = [lemmatize(topic) for topic in topics]
     topic_expansion = query_expansion(topics)
     if exact:
         topic_expansion = set()
+        return_topics = topics
+    else:
+        return_topics = list(topic_expansion)
     topic_tree = {topic: [te for te in topic_expansion if te in topic] for topic in topics}
 
     candidates = set(candidates)
@@ -222,12 +220,12 @@ def search(topics, candidates, debate_filters, exact):
                 filtered_debates.append(debate)
             else:
                 # filter debates by title, tags, and description
-                debate_text = tokenize(debate['title']).union(
-                    tokenize(debate['description'])).union(
-                    tokenize(' '.join(debate['tags'])))
+                debate_text = stem(debate['title']).union(
+                    stem(debate['description'])).union(
+                    stem(' '.join(debate['tags'])))
 
                 for debate_filter in other_filters:
-                    words = tokenize(debate_filter)
+                    words = stem(debate_filter)
                     if words.issubset(debate_text):
                         filtered_debates.append(debate)
                         break
@@ -242,16 +240,20 @@ def search(topics, candidates, debate_filters, exact):
             results.append(result)
             result['is_polling'] = True if sum([len(x['polls']) for x in result['candidates']]) else False
 
-    # order the debates
-    max_change = max(polling_change(debate, candidates) for debate in results)
-    max_score = max(score_debate(debate) for debate in results)
-    results.sort(key=lambda x: sort_debates(x, candidates, max_change, max_score), reverse=True)
+    if results:
+        # order the debates
+        max_change = max(polling_change(debate, candidates) for debate in results)
+        if max_change == 0:
+            max_change = 1
 
-    # make dates pretty
-    for debate in results:
-        debate['date'] = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
+        max_score = max(score_debate(debate) for debate in results)
+        results.sort(key=lambda x: sort_debates(x, candidates, max_change, max_score), reverse=True)
 
-    return results, topics + list(topic_expansion)
+        # make dates pretty
+        for debate in results:
+            debate['date'] = f"{debate['date']:%B} {debate['date'].day}, {debate['date'].year}"
+
+    return results, return_topics
 
 
 def search_debate(debate, candidates, topics, topic_expansion, topic_tree):
