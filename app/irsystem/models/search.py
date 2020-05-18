@@ -156,16 +156,38 @@ def get_candidate_info(candidate_name, election, date):
     return {'name': candidate_name, 'pct_change': None, 'polls': []}
 
 
-def sort_debates(debate, candidates):
+def polling_change(debate, candidates):
+    if len(candidates) == 0:
+        max_poll = max(0 if x['pct_change'] is None else abs(x['pct_change']) for x in debate['candidates'])
+    else:
+        max_poll = 0
+        for x in debate['candidates']:
+            if x['name'] in candidates and x['pct_change'] is not None:
+                max_poll = max(max_poll, abs(x['pct_change']))
+
+    if max_poll == 0:
+        return 1
+    else:
+        return max_poll
+
+
+def score_debate(debate):
+    half_years = (datetime.now() - debate['date']).days // 180 + 1
+    return debate['total_score'] / half_years
+
+
+def sort_debates(debate, candidates, max_change, max_score):
     # order by number of searched candidates that were returned
     quote_speakers = {c['speaker'] for r in debate['results'] for c in r['quotes']}
     response_candidates = len(quote_speakers.intersection(candidates))
 
-    # then order by combination of time since debate and total score of quotes
-    half_years = (datetime.now() - debate['date']).days // 180 + 1
-    date_score = debate['total_score'] / half_years
+    # weighting scheme: 2 * (time since debate and total score of quotes) and
+    # 1 * (polling change)
+    debate_score = score_debate(debate) / max_score * 2
+    polling_score = polling_change(debate, candidates) / max_change * 1
 
-    return response_candidates, date_score
+    print((debate['title'], debate_score, polling_score))
+    return response_candidates, (debate_score + polling_score)
 
 
 def search(topics, candidates, debate_filters, exact):
@@ -182,7 +204,7 @@ def search(topics, candidates, debate_filters, exact):
     if len(candidates) == 0:
         debate_query = {'tags': 'debate'}
     elif len(candidates) == 1:
-        debate_query = {'candidates': candidates[0]}
+        debate_query = {'candidates': next(iter(candidates))}
     else:
         debate_query = {'$or': [{'candidates': candidate} for candidate in candidates]}
 
@@ -221,7 +243,9 @@ def search(topics, candidates, debate_filters, exact):
             result['is_polling'] = True if sum([len(x['polls']) for x in result['candidates']]) else False
 
     # order the debates
-    results.sort(key=lambda x: sort_debates(x, candidates), reverse=True)
+    max_change = max(polling_change(debate, candidates) for debate in results)
+    max_score = max(score_debate(debate) for debate in results)
+    results.sort(key=lambda x: sort_debates(x, candidates, max_change, max_score), reverse=True)
 
     # make dates pretty
     for debate in results:
